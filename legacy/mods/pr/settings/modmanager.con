@@ -1,0 +1,152 @@
+#
+# Multiplay, ModManager v2.2
+#
+modmanager.autoSave 1
+modmanager.banManagerModule "mm_banmanager"
+modmanager.debugEnable 0
+modmanager.debugFile "modmanager_debug"
+modmanager.homeGuess "C:/Documents and Settings/Administrator/My Documents/Battlefield 2/"
+modmanager.logAppend 1
+modmanager.logAutoFlush 1
+modmanager.logDateFormat "[%Y-%m-%d %H:%M:%S] "
+modmanager.logLevel 3
+modmanager.logModule "mm_logger"
+modmanager.moduleBase "modules"
+modmanager.rconModule "mm_rcon"
+
+
+# Modules
+modmanager.loadModule "mm_tk_punish"
+modmanager.loadModule "mm_kicker"
+modmanager.loadModule "dam"
+modmanager.loadModule "mm_announcer"
+modmanager.loadModule "mm_bf2cc"
+modmanager.loadModule "mm_autobalance"
+modmanager.loadModule "mm_admin"
+
+#
+# ModManager Announcer v1.8
+#
+mm_announcer.addJoinMessage "Welcome to Russian Reality PR0S - www.realitymod.ru , www.otstrel.ru - TS3: ts.otstrel.ru"
+mm_announcer.addTimedMessage "135:622:[Don't make Squad or Comm before 1:30]"
+mm_announcer.addTimedMessage "1800:305:[Do not spam in mumble between rounds]"
+mm_announcer.addTimedMessage "230:622:[All players must have working microphone for better communication]"
+mm_announcer.addTimedMessage "50:630:[ASSETRULE is comming with PR1.4 release]-ASSETRULE for TANK, CAS, TRANS. APC is free"
+
+#
+# ModManager Team autobalance v2.8
+#
+mm_autobalance.allowCommander 0
+mm_autobalance.allowSquadLeader 0
+mm_autobalance.allowSquadMember 0
+mm_autobalance.clantags "CF|"
+mm_autobalance.roundSwitch 1
+
+#
+# BanManager v3.8
+#
+mm_banmanager.banFilename "mm_bans.xml"
+mm_banmanager.banMessage "%s you are being banned (reason: %s)"
+mm_banmanager.dateTimeFormat "%d/%m/%Y %H:%M:%S %Z"
+mm_banmanager.defaultBanAddress "N/A"
+mm_banmanager.defaultBanCdKeyHash "N/A"
+mm_banmanager.defaultBanDelay 5
+mm_banmanager.defaultBanMethod "Key"
+mm_banmanager.defaultBanNick "N/A"
+mm_banmanager.defaultBanPeriod "Perm"
+mm_banmanager.defaultBanProfileId "N/A"
+mm_banmanager.defaultBanReason "Unknown"
+mm_banmanager.defaultBannedBy "Unknown"
+mm_banmanager.defaultKickDelay 5
+mm_banmanager.defaultKickReason "Unknown"
+mm_banmanager.defaultUnBanReason "Unknown"
+mm_banmanager.kickMessage "%s you are being kicked (reason: %s)"
+mm_banmanager.oldDateTimeFormat "%a %b %d %H:%M:%S %Y"
+
+#
+# BF2CC v7.2 for ModManager
+#
+mm_bf2cc.chatBufferSize 500
+mm_bf2cc.serverChatFormat "[Admin: %s] %s"
+
+#
+# ModManager Player Kicker v2.6
+#
+mm_kicker.banLimit 1
+mm_kicker.banPeriod "Round"
+mm_kicker.banType "Key"
+mm_kicker.banWordReason "Using bad / racist language"
+mm_kicker.chatSpamBanPeriod "Round"
+mm_kicker.chatSpamBanReason "Chat spam"
+mm_kicker.chatSpamLimit 5
+mm_kicker.chatSpamPeriod 5
+mm_kicker.enableChatChecks 0
+mm_kicker.idleIgnoreNotStarted 0
+mm_kicker.idleLimit 0
+mm_kicker.initDelay 60
+mm_kicker.kickDelay 5
+mm_kicker.kickLimit 3
+mm_kicker.kickMessage "Sorry '%s' your are being kicked ( %s )"
+mm_kicker.kickType 1
+mm_kicker.kickWordReason "Using bad / racist language"
+mm_kicker.maxPing 300
+mm_kicker.minPing 0
+mm_kicker.negScoreKick -15
+mm_kicker.pingLimit 8
+mm_kicker.positionDelay 120
+mm_kicker.samplePeriod 120
+mm_kicker.sampleRate 10
+mm_kicker.warnWordMessage "WARNING: Please refrain from using bad / racist language on this server '%s'"
+
+#
+# ModManager Logger v1.5
+#
+mm_logger.logAppend 1
+mm_logger.logAutoFlush 1
+mm_logger.logFilename "modmanager"
+
+#
+# ModManager Rcon v8.5
+#
+mm_rcon.advancedMapSizeValidation 0
+mm_rcon.allowBatching 1
+mm_rcon.basicAuthLevel 50
+mm_rcon.defaultGametype "gpm_cq"
+mm_rcon.enableLinger 0
+mm_rcon.lingerFor 1
+mm_rcon.logCommands 1
+mm_rcon.loginMessage "done, admin %s"
+mm_rcon.logoutMessage ""
+mm_rcon.rconBasicPassword ""
+mm_rcon.rconIp "0.0.0.0"
+mm_rcon.rconListenQueue 1
+mm_rcon.rconPassword ""
+mm_rcon.rconPort 6715
+mm_rcon.reuseAddress 1
+mm_rcon.superAuthLevel 100
+
+#
+# mm_reserver
+#
+mm_reserver.kickDelay 5
+mm_reserver.kickMode 2
+mm_reserver.kickReason "Reserved slots reached"
+mm_reserver.kickType 1
+mm_reserver.privatePassword ""
+mm_reserver.addProfileId 225319023
+mm_reserver.addProfileId 44812433
+mm_reserver.addProfileId 86761121
+mm_reserver.reservedSlots 0
+
+#
+# ModManager Team kill punisher v2.3
+#
+mm_tk_punish.announcePunishments 1
+mm_tk_punish.banMessageDelay 5
+mm_tk_punish.banPeriod "Round"
+mm_tk_punish.banReason "Team killing"
+mm_tk_punish.bannedBy "ModManager Team Kill Punisher"
+mm_tk_punish.forgiveMessage "TKPUNISH: %s forgives %s for a teamkill (%s has %d punishes and %d forgives)"
+mm_tk_punish.punishMessage "TKPUNISH: %s punishes %s for a teamkill (%s has %d punishes and %d forgives)"
+mm_tk_punish.punishTime 20
+
