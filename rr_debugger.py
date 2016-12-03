@@ -33,10 +33,10 @@ class Debugger():
         self.g_default_server_port = C.SERVERPORT
         
         self.g_logger_name = "RRDebug"
-        self.g_FILELOGGER = self.interface.create_logger(name=self.g_logger_name,
-                                                    path=C.PATH_LOG_DIRECTORY,
-                                                    fileName=C.PATH_LOG_FILENAME,
-                                                    continous=True)
+        self.interface.create_logger(name=self.g_logger_name,
+                                    path=C.PATH_LOG_DIRECTORY,
+                                    fileName=C.PATH_LOG_FILENAME,
+                                    continous=True)
         self.g_SOCK = None
         self.client_udp_create()
 

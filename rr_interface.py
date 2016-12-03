@@ -16,9 +16,9 @@ class Interface(object):
         return self.__host.sgl_getModDirectory()
 
     def create_logger(self, name, path, fileName, continous):
-        return self.__realitylogger.createLogger(name, path, fileName, continous)
+        self.__realitylogger.createLogger(name, path, fileName, continous)
 
-    def send_logger_logLine(name, msg):
+    def send_logger_logLine(self, name, msg):
         # self.__realitylogger.RealityLogger[name].setActive( True )
         return self.__realitylogger.RealityLogger[name].logLine(msg)
 
