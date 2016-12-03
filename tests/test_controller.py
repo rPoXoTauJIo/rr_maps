@@ -9,7 +9,7 @@ class TestController(unittest.TestCase):
         interface = rr_mocks.MockInterface()
         self.controller = rr_controller.MapsController(interface)
 
-    def test_can_init_controller(self):
+    def test_init_controller(self):
         self.assertIsInstance(self.controller, rr_controller.MapsController)
     
 

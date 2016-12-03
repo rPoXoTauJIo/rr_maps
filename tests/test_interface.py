@@ -2,6 +2,7 @@
 import unittest
 
 import rr_mocks
+import rr_config
 
 import rr_interface
         
@@ -13,9 +14,18 @@ class TestInterface(unittest.TestCase):
         self.__realitylogger = rr_mocks.Mock_realitylogger()
 
         self.interface = rr_interface.Interface(self.__bf2, self.__host, self.__realitylogger)
+    
+    def tearDown(self):
+        del self.__bf2, self.__host, self.__realitylogger, self.interface
 
     def test_init_interface(self):
         self.assertIsInstance(self.interface, rr_interface.Interface)
+    
+    def test_interface_config_init(self):
+        self.interface.init_config('rr_config')
+        for key, value in rr_config.C.items():
+            self.assertIn(key, self.interface.C)
+            self.assertEqual(self.interface.C[key], value)
     
     def test_assert_get_wall_time(self):
         self.assert_(self.interface.get_wall_time() is 0)

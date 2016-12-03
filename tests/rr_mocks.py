@@ -95,12 +95,17 @@ class MockInterface(object):
     def __init__(self):
         self.__logger = MockLogger()
         self.__host = Mock_host()
+        self.C = {}
+    
+    def init_config(self, config):
+        CFG = __import__(config)
+        self.C.update(CFG.C)
     
     def get_wall_time(self):
-        return 0
+        return self.__host.timer_getWallTime()
     
     def create_logger(self, name, path, fileName, continous):
-        return self.__logger.createLogger(name, path, fileName, continous)
+        self.__logger.createLogger(name, path, fileName, continous)
     
     def send_logger_logLine(self, name, msg):
         return self.__logger.__loggers[name].logLine(msg)
@@ -109,4 +114,4 @@ class MockInterface(object):
         self.__host.rcon_invoke("echo \"" + str(msg) + "\"")
         
     def get_mod_directory(self):
-        return '.'
+        return self.__host.sgl_getModDirectory()

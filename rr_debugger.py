@@ -18,64 +18,53 @@ import socket
 
 # import realitylogger as rlogger # <-- replaced by interface
 
-import rr_config_debugger as C
+# import rr_config_debugger as C
 # from datetime import datetime
 
 
 class Debugger():
 
+    _client = None
+
     def __init__(self, interface):
         self.interface = interface
+        if self.interface.C['SOCKET']:
+            self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.__default_addr = self.interface.C['CLIENTHOST']
+            self.__default_port = self.interface.C['CLIENTPORT']
+        '''
         self.g_time_init_epoch = time.time()
         self.g_time_init_wall = self.interface.get_wall_time()
         
-        self.g_default_server_addr = C.SERVERHOST
-        self.g_default_server_port = C.SERVERPORT
+        self.g_default_log_path = C.PATH_LOG_DIRECTORY
+        self.g_default_log_filename = C.PATH_LOG_FILENAME
         
         self.g_logger_name = "RRDebug"
         self.interface.create_logger(name=self.g_logger_name,
-                                    path=C.PATH_LOG_DIRECTORY,
-                                    fileName=C.PATH_LOG_FILENAME,
+                                    path=self.g_default_log_path,
+                                    fileName=self.g_default_log_filename,
                                     continous=True)
-        self.g_SOCK = None
-        self.client_udp_create()
+        '''
 
-    def client_udp_create(self):
-        try:
-            self.g_SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.interface.debug_echo('Created UDP socket')
-        except socket.error:
-            # self.errorMessage()
-            self.interface.debug_echo('Failed to create UDP socket')
-
-    def client_udp_destroy(self):
-        try:
-            self.g_SOCK.close()
-            self.interface.debug_echo('Closed UDP socket')
-        except socket.error:
-            # self.errorMessage()
-            self.interface.debug_echo('Failed to close UDP socket')
 
     def debug_message(msg, senders=None):
 
-        def debug_file(msg):
+        def _debug_file(msg):
             self.interface.send_logger_logLine(self.g_logger_name, msg)
 
-        def debug_socket(msg):
+        def _debug_socket(msg, addr=self.g_default_server_addr, port=self.g_default_server_port):
             try:
                 if C.PICKLE_DATA:
-                    message = cPickle.dumps(data)
-                else:
-                    message = msg
-                SOCK.sendto(message, (C.CLIENTHOST, C.CLIENTPORT))
+                    msg = cPickle.dumps(data)
+                SOCK.sendto(msg, (addr, port))
             except:
                 debug_echo('debug_socket(): failed to send message')
 
         debugs = {
             'echo': self.interface.debug_echo,
             'ingame': self.interface.debug_ingame,
-            'file': debug_file,
-            'udp': debug_socket,
+            'file': _debug_file,
+            'udp': _debug_socket,
         }
         if senders is None:
             for default_debug in C.DEBUGS_DEFAULT:

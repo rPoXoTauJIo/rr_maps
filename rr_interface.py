@@ -8,6 +8,11 @@ class Interface(object):
         self.__bf2 = bf2
         self.__host = host
         self.__realitylogger = realitylogger
+        self.C = {}
+    
+    def init_config(self, config):
+        CFG = __import__(config)
+        self.C.update(CFG.C)
 
     def get_wall_time(self):
         return self.__host.timer_getWallTime()
