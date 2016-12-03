@@ -33,17 +33,21 @@ class TestInterface(unittest.TestCase):
         #logger, 
     
     def test_assert_send_logger_logLine(self):
-        name = 'testLog2'
+        name = 'testLog'
         path = '.'
         fileName = 'rr_mapscript.txt'
         continous = False
         self.interface.create_logger(name, path, fileName, continous)
-        self.interface.send_logger_logLine(name, 'testmsg')
-        self.assertIn('testmsg', self.__realitylogger.RealityLogger[name].messages)
+        self.interface.send_logger_logLine(name, 'test logger')
+        self.assertIn('test logger', self.__realitylogger.RealityLogger[name].messages)
         
     def test_assert_debug_echo(self):
-        self.interface.debug_echo('testmsg2')
-        self.assertIn('testmsg2', self.__host._game._state._echo)
+        self.interface.debug_echo('test echo')
+        self.assertIn('test echo', self.__host._game._state._echo)
+    
+    def test_assert_debug_ingame(self):
+        self.interface.debug_ingame('test ingame')
+        self.assertIn('test ingame', self.__host._game._state._chat['server'])
 
 
 if __name__ == '__main__':

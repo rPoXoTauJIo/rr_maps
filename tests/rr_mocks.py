@@ -11,25 +11,34 @@ class Mock_host(object):
         class _MockState(object):
             
             def __init__(self):
-                self._input_log = []
+                self._console_log = []
                 self._echo = []
+                self._chat = {
+                    'server' : [],
+                    }
         
         def __init__(self):
             self._state = self._MockState()
             self.__handlers = {
                 'echo' : self.__handler_echo,
+                'game.sayAll' : self.__handler_say_all,
                 }
             
         def send_to_handlers(self, input):
-            self._state._input_log.append(input)
+            self._state._console_log.append(input)
             self.command = input.split(' ')[0]
             self.__handlers[self.command](input)
         
         def __handler_echo(self, input):
-            self._state._input_log.append(input)
+            self._state._console_log.append(input)
             message = input.replace('echo ', '')
             message = message.replace('"', '').replace("'", '')
             self._state._echo.append(message)
+        
+        def __handler_say_all(self, input):
+            message = input.replace('game.sayAll ', '')
+            message = message.replace('"', '').replace("'", '')
+            self._state._chat['server'].append(message)
 
     def __init__(self):
         self._game = self._MockGame()
