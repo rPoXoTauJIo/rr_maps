@@ -1,1 +1,1 @@
-../.rrenv/Scripts/python.exe -m unittest discover tests
+../.rrenv/Scripts/python.exe -m unittest discover tests -v
