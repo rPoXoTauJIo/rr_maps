@@ -29,7 +29,7 @@ class TestInterface(unittest.TestCase):
         fileName = 'rr_mapscript.txt'
         continous = False
         self.interface.create_logger(name, path, fileName, continous)
-        self.assertTrue(name, self.__realitylogger.RealityLogger._loggers)
+        self.assertIn(name, self.__realitylogger.RealityLogger._loggers)
         #logger, 
     
     def test_assert_send_logger_logLine(self):
@@ -40,7 +40,10 @@ class TestInterface(unittest.TestCase):
         self.interface.create_logger(name, path, fileName, continous)
         self.interface.send_logger_logLine(name, 'testmsg')
         self.assertIn('testmsg', self.__realitylogger.RealityLogger[name].messages)
-    
+        
+    def test_assert_debug_echo(self):
+        self.interface.debug_echo('testmsg2')
+        self.assertIn('testmsg2', self.__host._game._state._echo)
 
 
 if __name__ == '__main__':

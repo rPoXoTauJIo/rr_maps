@@ -6,14 +6,42 @@ class Mock_bf2(object):
         
 class Mock_host(object):
     
+    class _MockGame(object):
+    
+        class _MockState(object):
+            
+            def __init__(self):
+                self._input_log = []
+                self._echo = []
+        
+        def __init__(self):
+            self._state = self._MockState()
+            self.__handlers = {
+                'echo' : self.__handler_echo,
+                }
+            
+        def send_to_handlers(self, input):
+            self._state._input_log.append(input)
+            self.command = input.split(' ')[0]
+            self.__handlers[self.command](input)
+        
+        def __handler_echo(self, input):
+            self._state._input_log.append(input)
+            message = input.replace('echo ', '')
+            message = message.replace('"', '').replace("'", '')
+            self._state._echo.append(message)
+
     def __init__(self):
-        pass
+        self._game = self._MockGame()
     
     def timer_getWallTime(self):
         return 0
         
     def sgl_getModDirectory(self):
         return '.'
+    
+    def rcon_invoke(self, command):
+        self._game.send_to_handlers(command)
 
 class Mock_realitylogger(object):
 
@@ -22,15 +50,6 @@ class Mock_realitylogger(object):
     
     def createLogger(self, name, path, fileName, continous):
         self.RealityLogger.createLogger(name, path, fileName, continous)
-
-
-class MockConsole(object):
-    
-    def __init__(self):
-        self.messages = []
-
-    def echo(self, msg):
-        self.messages.append(msg)
 
 class MockLogger(object):
     
@@ -66,7 +85,7 @@ class MockInterface(object):
 
     def __init__(self):
         self.__logger = MockLogger()
-        self.__console = MockConsole()
+        self.__host = Mock_host()
     
     def get_wall_time(self):
         return 0
@@ -78,7 +97,7 @@ class MockInterface(object):
         return self.__logger.__loggers[name].logLine(msg)
     
     def debug_echo(self, msg):
-        self.__console.echo(msg)
+        self.__host.rcon_invoke("echo \"" + str(msg) + "\"")
         
     def get_mod_directory(self):
         return '.'
