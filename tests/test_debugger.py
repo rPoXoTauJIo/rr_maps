@@ -58,6 +58,7 @@ class TestDebuggerSockets(unittest.TestCase):
         while 1:
             debugger._debug_socket(
                 message, (self.interface.C['CLIENTHOST'], self.interface.C['CLIENTPORT']))
+            print(message)
             if message in server.messages:
                 # Ensure server thread ends
                 server_thread.join()

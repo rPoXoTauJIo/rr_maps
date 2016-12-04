@@ -46,13 +46,14 @@ class Debugger():
                                     continous=True)
         '''
     
-    def _debug_socket(self, msg, (addr, port)=None):
+    def _debug_socket(self, msg, addr=None, port=None):
         if self.interface.C['SOCKET']:  # safety check
             try:
                 if self.interface.C['PICKLE_DATA']:
                     msg = cPickle.dumps(msg)
-                if not (addr, port):
+                if addr is None:
                     addr = self.__default_addr
+                if port is None:
                     port = self.__default_port
                 self._client.sendto(msg, (addr, port))
             except:
