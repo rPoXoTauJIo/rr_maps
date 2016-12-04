@@ -1,2 +1,2 @@
-import rr_maps
-rr_maps.init()
+import rr_init
+rr_init.init()
