@@ -48,9 +48,9 @@ if __name__ == '__main__':
 
 SOCK = None
 C = {
-    'SERVERHOST' : 'localhost',
-    'SERVERPORT' : 8888,
-    }
+    'SERVERHOST': 'localhost',
+    'SERVERPORT': 8888,
+}
 
 # Datagram (udp) socket
 SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -62,11 +62,3 @@ while 1:
     print('Message from[%s:%s]: %s' % (addr[0], addr[1], data))
 
 S.close()
-
-
-
-
-
-
-
-

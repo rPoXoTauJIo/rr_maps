@@ -30,6 +30,16 @@ C['CLIENTHOST'] = 'localhost'
 C['CLIENTPORT'] = 8888
 #
 #
+# Use python cPickle lib for packing data in socket
+# Default is False
+C['PICKLE_DATA'] = False
+#
+#
+# Use file logger
+# Default is False
+C['FILELOG'] = False
+#
+#
 # Filename of the admin log file
 # Default is "rr_mapscript.txt"
 C['PATH_LOG_FILENAME'] = "rr_mapscript.txt"
@@ -38,13 +48,6 @@ C['PATH_LOG_FILENAME'] = "rr_mapscript.txt"
 # Path relative to PR root (not mod root) of mapscript log file
 # Default is "admin/logs"
 C['PATH_LOG_DIRECTORY'] = "admin/logs"
-#
-#
-# Use python cPickle lib for packing data
-# Default is False
-C['PICKLE_DATA'] = False
-#
-#
 #
 #
 #

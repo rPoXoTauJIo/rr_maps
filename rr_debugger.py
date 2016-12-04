@@ -29,12 +29,22 @@ class Debugger():
     def __init__(self, interface):
         self.interface = interface
         self._client = None
-        # unfortunately pr server can't use interface straight from start?
-        if self.interface.C['SOCKET']:
-            self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._filelogger = None
+
         self.__default_addr = self.interface.C['CLIENTHOST']
         self.__default_port = self.interface.C['CLIENTPORT']
+        self.__default_log_path = self.interface.C['PATH_LOG_DIRECTORY']
+        self.__default_log_filename = self.interface.C['PATH_LOG_FILENAME']
+        self.__logger_name = "RRDebug"
+
+        if self.interface.C['SOCKET']:
+            self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        if self.interface.C['FILELOG']:
+            self._filelogger = self.interface.create_logger(name=self.__logger_name,
+                                                            path=self.__default_log_path,
+                                                            fileName=self.__default_log_filename,
+                                                            continous=True)
+
         '''
         self.g_time_init_epoch = time.time()
         self.g_time_init_wall = self.interface.get_wall_time()
@@ -44,16 +54,16 @@ class Debugger():
         
         self.g_logger_name = "RRDebug"
         self.interface.create_logger(name=self.g_logger_name,
-                                    path=self.g_default_log_path,
-                                    fileName=self.g_default_log_filename,
+                                    path=self.__default_log_path,
+                                    fileName=self.__default_log_filename,
                                     continous=True)
         '''
-    
+
     def _debug_socket(self, msg, addr=None, port=None):
-        if self.interface.C['SOCKET'] and self._client != None: # safety check
+        if self.interface.C['SOCKET'] and self._client != None:  # safety check
             if self.interface.C['PICKLE_DATA']:
                 msg = cPickle.dumps(msg)
-        
+
             if addr == None:
                 addr = self.__default_addr
             if port == None:
@@ -61,7 +71,8 @@ class Debugger():
             try:
                 self._client.sendto(msg, (addr, port))
             except:
-                self.interface.debug_echo('debug_socket(): failed to send message')
+                self.interface.debug_echo(
+                    'debug_socket(): failed to send message')
 
     '''
     def debug_message(msg, senders=None):

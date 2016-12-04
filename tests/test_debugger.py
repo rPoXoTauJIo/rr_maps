@@ -19,6 +19,28 @@ class TestDebugger(unittest.TestCase):
     def test_init_debugger(self):
         debugger = rr_debugger.Debugger(self.interface)
         self.assertIsInstance(debugger, rr_debugger.Debugger)
+    
+
+class TestDebuggerFilelog(unittest.TestCase):
+
+    def setUp(self):
+        self.interface = rr_mocks.MockInterface()
+        self.interface.init_config('rr_config')
+
+    def tearDown(self):
+        del self.interface
+
+    def test_filelogger_default_disabled(self):
+        debugger = rr_debugger.Debugger(self.interface)
+        self.assert_(debugger.interface.C['FILELOG'] is False)
+        self.assert_(debugger._filelogger is None)
+
+    def test_filelogger_default_enabled(self):
+        self.interface.init_config('rr_config')
+        self.interface.C['FILELOG'] = True
+        debugger = rr_debugger.Debugger(self.interface)
+        self.assert_(debugger.interface.C['FILELOG'] is True)
+        self.assertIsNotNone(debugger._filelogger)
 
 
 class TestDebuggerSockets(unittest.TestCase):

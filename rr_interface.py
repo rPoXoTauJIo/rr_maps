@@ -11,7 +11,7 @@ class Interface(object):
         self.C = {}
 
     def init_config(self, config):
-        CFG = __import__(config, globals( ), locals( ), ['*'])
+        CFG = __import__(config, globals(), locals(), ['*'])
         self.C.update(CFG.C)
 
     def get_wall_time(self):
