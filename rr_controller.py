@@ -6,6 +6,7 @@ import os
 #import rr_debugger as D
 #import rr_config_maps as C
 
+
 class MapsController:
 
     def __init__(self, interface):
@@ -34,4 +35,3 @@ class MapsController:
             map_layer = '16'
 
         return (map_name, map_gamemode, map_layer)
-

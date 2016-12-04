@@ -2,7 +2,7 @@
 # Debugger config file
 #
 #
-C = { }
+C = {}
 #
 #
 # UDP socket debug enable/disable

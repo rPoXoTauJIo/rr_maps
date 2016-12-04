@@ -1,5 +1,38 @@
+import socket
+
+
+class MockNetwork(object):
+    # solution by NanoDano
+    # http://www.devdungeon.com/content/unit-testing-tcp-server-client-python
+
+    class __FakeServer(object):
+
+        def __init__(self, listenhost, listenport):
+            self.__listenhost = listenhost
+            self.__listenport = listenport
+            self.messages = []
+            self.exit_flags = []
+
+        def runner_fake_server(self):
+            # Run a server to listen for a connection and then close it
+            server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            server_sock.bind((self.__listenhost, self.__listenport))
+            while 1:
+                d = server_sock.recvfrom(1024)
+                data = d[0]  # data
+                addr = d[1]  # ip and port
+                self.messages.append(data)
+                if data in self.exit_flags:
+                    break
+            server_sock.close()
+
+    def __init__(self, interface):
+        self.interface = interface
+        self.server = self.__FakeServer(self.interface.C['SERVERHOST'], self.interface.C['SERVERPORT'])
+
 
 class Mock_bf2(object):
+    # actually it's just a wrapper around host in bf2
     
     def __init__(self):
         self.Status = None

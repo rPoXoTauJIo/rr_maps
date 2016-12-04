@@ -46,19 +46,19 @@ class Debugger():
                                     continous=True)
         '''
 
-
     def debug_message(msg, senders=None):
 
         def _debug_file(msg):
             self.interface.send_logger_logLine(self.g_logger_name, msg)
 
         def _debug_socket(msg, addr=self.g_default_server_addr, port=self.g_default_server_port):
-            try:
-                if C.PICKLE_DATA:
-                    msg = cPickle.dumps(data)
-                SOCK.sendto(msg, (addr, port))
-            except:
-                debug_echo('debug_socket(): failed to send message')
+            if self.interface.C['SOCKET']:  # safety check
+                try:
+                    if C.PICKLE_DATA:
+                        msg = cPickle.dumps(data)
+                    SOCK.sendto(msg, (addr, port))
+                except:
+                    debug_echo('debug_socket(): failed to send message')
 
         debugs = {
             'echo': self.interface.debug_echo,
@@ -101,4 +101,3 @@ class Debugger():
 
 
 pass
-
