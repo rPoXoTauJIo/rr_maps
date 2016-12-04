@@ -15,7 +15,6 @@ class MockNetwork(object):
 
         def runner_fake_server(self):
             # Run a server to listen for a connection and then close it
-            '''
             server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             server_sock.bind((self.__listenhost, self.__listenport))
             while 1:
@@ -26,9 +25,7 @@ class MockNetwork(object):
                 if data in self.exit_flags:
                     break
             server_sock.close()
-            '''
-            while 1:
-                pass
+
 
     def __init__(self, interface):
         self.interface = interface

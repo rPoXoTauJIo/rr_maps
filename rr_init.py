@@ -10,5 +10,6 @@ import rr_debugger
 def init():
     interface = rr_interface.Interface(bf2, host, rlogger)
     interface.init_config('rr_config')
+    interface.C['SOCKET'] = True
     debugger = rr_debugger.Debugger(interface)
     debugger._debug_socket('Server start')

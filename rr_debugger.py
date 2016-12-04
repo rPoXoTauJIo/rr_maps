@@ -24,14 +24,17 @@ import socket
 
 class Debugger():
 
-    _client = None
+    #_client = None
 
     def __init__(self, interface):
         self.interface = interface
+        self._client = None
+        # unfortunately pr server can't use interface straight from start?
         if self.interface.C['SOCKET']:
             self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.__default_addr = self.interface.C['CLIENTHOST']
-            self.__default_port = self.interface.C['CLIENTPORT']
+        #self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.__default_addr = self.interface.C['CLIENTHOST']
+        self.__default_port = self.interface.C['CLIENTPORT']
         '''
         self.g_time_init_epoch = time.time()
         self.g_time_init_wall = self.interface.get_wall_time()
@@ -47,14 +50,15 @@ class Debugger():
         '''
     
     def _debug_socket(self, msg, addr=None, port=None):
-        if self.interface.C['SOCKET']:  # safety check
+        if self.interface.C['SOCKET'] and self._client != None: # safety check
+            if self.interface.C['PICKLE_DATA']:
+                msg = cPickle.dumps(msg)
+        
+            if addr == None:
+                addr = self.__default_addr
+            if port == None:
+                port = self.__default_port
             try:
-                if self.interface.C['PICKLE_DATA']:
-                    msg = cPickle.dumps(msg)
-                if addr is None:
-                    addr = self.__default_addr
-                if port is None:
-                    port = self.__default_port
                 self._client.sendto(msg, (addr, port))
             except:
                 self.interface.debug_echo('debug_socket(): failed to send message')

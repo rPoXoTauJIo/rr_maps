@@ -46,30 +46,20 @@ if __name__ == '__main__':
     server.run()
 '''
 
-S = None
+SOCK = None
 C = {
     'SERVERHOST' : 'localhost',
     'SERVERPORT' : 8888,
     }
 
 # Datagram (udp) socket
-try:
-    S = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-except socket.error:
-    sys.exit()
-
-# Bind socket to local host and port
-try:
-    S.bind((C['SERVERHOST'], C['SERVERPORT']))
-except socket.error:
-    sys.exit()
+SOCK = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+SOCK.bind((C['SERVERHOST'], C['SERVERPORT']))
 
 # now keep talking with the client
 while 1:
-    d = S.recvfrom(1024)
-    data = d[0]  # data
-    addr = d[1]  # ip and port
-    print('Message from[%s:%s]' % (addr[0], addr[1]))
+    data, addr = SOCK.recvfrom(1024)
+    print('Message from[%s:%s]: %s' % (addr[0], addr[1], data))
 
 S.close()
 
