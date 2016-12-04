@@ -56,7 +56,7 @@ class TestDebuggerSockets(unittest.TestCase):
 
         # Start client sending messages
         while 1:
-            debugger._client.sendto(
+            debugger._debug_socket(
                 message, (self.interface.C['CLIENTHOST'], self.interface.C['CLIENTPORT']))
             if message in server.messages:
                 # Ensure server thread ends
@@ -64,7 +64,6 @@ class TestDebuggerSockets(unittest.TestCase):
                 break
 
         self.assert_(message in server.messages)
-
 
 if __name__ == '__main__':
     unittest.main()
