@@ -1,1 +1,1 @@
-virtualenv ../.rrenv --python=C:\\Python27\\python.exe
+virtualenv .rrenv --python=C:\\Python27\\python.exe
