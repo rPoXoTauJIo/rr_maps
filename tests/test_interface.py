@@ -58,6 +58,15 @@ class TestInterface(unittest.TestCase):
     def test_assert_debug_ingame(self):
         self.interface.debug_ingame('test ingame')
         self.assertIn('test ingame', self.__host._game._state._chat['server'])
+    
+    def test_assert_set_active_logger(self):
+        name = 'testLog'
+        path = '.'
+        fileName = 'rr_mapscript.txt'
+        continous = False
+        self.interface.create_logger(name, path, fileName, continous)
+        self.interface.set_active_logger(name)
+        self.assert_(self.__realitylogger.RealityLogger[name].active is True)
 
 
 if __name__ == '__main__':
