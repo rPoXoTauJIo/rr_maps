@@ -38,12 +38,9 @@ class Debugger():
         self.__logger_name = "RRDebug"
 
         if self.interface.C['SOCKET']:
-            self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.__init_client()
         if self.interface.C['FILELOG']:
-            self._filelogger = self.interface.create_logger(name=self.__logger_name,
-                                                            path=self.__default_log_path,
-                                                            fileName=self.__default_log_filename,
-                                                            continous=True)
+            self.__init_filelogger()
 
         '''
         self.g_time_init_epoch = time.time()
@@ -58,6 +55,15 @@ class Debugger():
                                     fileName=self.__default_log_filename,
                                     continous=True)
         '''
+    
+    def __init_client(self):
+        self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    def __init_filelogger(self):
+        self.interface.create_logger(name=self.__logger_name,
+                                    path=self.__default_log_path,
+                                    fileName=self.__default_log_filename,
+                                    continous=True)
 
     def _debug_socket(self, msg, addr=None, port=None):
         if self.interface.C['SOCKET'] and self._client != None:  # safety check
@@ -73,6 +79,9 @@ class Debugger():
             except:
                 self.interface.debug_echo(
                     'debug_socket(): failed to send message')
+
+    def _debug_file(self, msg):
+            return self.interface.send_logger_logLine(self.__logger_name, msg)
 
     '''
     def debug_message(msg, senders=None):

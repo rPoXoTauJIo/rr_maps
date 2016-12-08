@@ -12,4 +12,4 @@ def init():
     interface.init_config('rr_config')
     interface.C['SOCKET'] = True
     debugger = rr_debugger.Debugger(interface)
-    debugger._debug_socket('Server start')
+    debugger._debug_file('Server start')

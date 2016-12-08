@@ -122,7 +122,11 @@ class MockLogger(object):
             self.messages = []
         
         def logLine(self, msg):
-            self.messages.append(msg)
+            try:
+                self.messages.append(msg)
+                return True
+            except:
+                return False
 
 class MockInterface(object):
 
@@ -142,7 +146,7 @@ class MockInterface(object):
         self.__logger.createLogger(name, path, fileName, continous)
     
     def send_logger_logLine(self, name, msg):
-        return self.__logger.__loggers[name].logLine(msg)
+        return self.__logger._loggers[name].logLine(msg)
     
     def debug_echo(self, msg):
         self.__host.rcon_invoke("echo \"" + str(msg) + "\"")
