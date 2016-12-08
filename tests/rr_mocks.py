@@ -115,9 +115,10 @@ class MockLogger(object):
     class __Logger(object):
 
         def __init__(self, path, fileName, continous):
-            self.__path = path
-            self.__fileName = fileName
-            self.__continous = continous
+            self._path = path
+            self._fileName = fileName
+            self._continous = continous
+            self.active = False
             
             self.messages = []
         
@@ -127,6 +128,11 @@ class MockLogger(object):
                 return True
             except:
                 return False
+        
+        # To Enable/Disable logging at certain times
+        # Disabled logger still logs to memory buffer!
+        def setActive( self, active ):
+            self.active = active
 
 class MockInterface(object):
 

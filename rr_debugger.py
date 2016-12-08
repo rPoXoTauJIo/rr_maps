@@ -67,7 +67,7 @@ class Debugger():
 
     def _debug_socket(self, msg, addr=None, port=None):
         if self.interface.C['SOCKET'] and self._client != None:  # safety check
-            if self.interface.C['PICKLE_DATA']:
+            if self.interface.C['PICKLE_DATA']: # should test that aswell
                 msg = cPickle.dumps(msg)
 
             if addr == None:
@@ -81,6 +81,7 @@ class Debugger():
                     'debug_socket(): failed to send message')
 
     def _debug_file(self, msg):
+        if self.interface.C['FILELOG']:
             return self.interface.send_logger_logLine(self.__logger_name, msg)
 
     '''

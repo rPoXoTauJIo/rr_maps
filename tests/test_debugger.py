@@ -47,6 +47,12 @@ class TestDebuggerFilelog(unittest.TestCase):
         self.interface.C['FILELOG'] = True
         debugger = rr_debugger.Debugger(self.interface)
         self.assert_(debugger._debug_file('test message') is True)
+    
+    def test_filelogger_should_not_send_message_if_disabled(self): 
+        self.interface.init_config('rr_config')
+        self.interface.C['FILELOG'] = False
+        debugger = rr_debugger.Debugger(self.interface)
+        self.assert_(debugger._debug_file('test message') is True)
 
 
 class TestDebuggerSockets(unittest.TestCase):

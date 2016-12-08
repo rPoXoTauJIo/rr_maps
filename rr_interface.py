@@ -9,8 +9,9 @@ class Interface(object):
         self.__host = host
         self.__realitylogger = realitylogger
         self.C = {}
+        self.init_config()
 
-    def init_config(self, config):
+    def init_config(self, config = 'rr_config'):
         CFG = __import__(config, globals(), locals(), ['*'])
         self.C.update(CFG.C)
 
@@ -21,11 +22,21 @@ class Interface(object):
         return self.__host.sgl_getModDirectory()
 
     def create_logger(self, name, path, fileName, continous):
-        self.__realitylogger.createLogger(name, path, fileName, continous)
+        if self.C['FILELOG']:
+            self.__realitylogger.createLogger(name, path, fileName, continous)
+        else:
+            self.debug_echo('Filelogging disabled')
 
     def send_logger_logLine(self, name, msg):
         # self.__realitylogger.RealityLogger[name].setActive( True )
-        return self.__realitylogger.RealityLogger[name].logLine(msg)
+        if self.C['FILELOG']:
+            return self.__realitylogger.RealityLogger[name].logLine(msg)
+    
+    def set_active_logger(self, name, not_really=True):
+        if self.C['FILELOG']:
+            self.__realitylogger.RealityLogger[name].setActive(not_really)
+        else:
+            self.debug_echo('Filelogging disabled, cant activate logger %s' % (name))
 
     def debug_echo(self, msg):
         try:
