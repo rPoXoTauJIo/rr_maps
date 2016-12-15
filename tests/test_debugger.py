@@ -52,7 +52,7 @@ class TestDebuggerFilelog(unittest.TestCase):
         self.interface.init_config('rr_config')
         self.interface.C['FILELOG'] = False
         debugger = rr_debugger.Debugger(self.interface)
-        self.assert_(debugger._debug_file('test message') is True)
+        self.assert_(debugger._debug_file('test message') is False)
 
 
 class TestDebuggerSockets(unittest.TestCase):

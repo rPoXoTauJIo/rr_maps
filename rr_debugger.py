@@ -83,6 +83,7 @@ class Debugger():
     def _debug_file(self, msg):
         if self.interface.C['FILELOG']:
             return self.interface.send_logger_logLine(self.__logger_name, msg)
+        return False
 
     '''
     def debug_message(msg, senders=None):
