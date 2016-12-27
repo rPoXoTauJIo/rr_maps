@@ -101,8 +101,8 @@ class TestInterface(unittest.TestCase):
         
     def test_assert_debug_echo(self):
         self.interface.debug_echo('test echo')
-        self.assertIn('test echo', self.__host._game._state._echo)
-    
+        self.assertIn('test echo', self._get_echo_messages())
+
     def test_assert_debug_ingame(self):
         self.interface.debug_ingame('test ingame')
         self.assertIn('test ingame', self.__host._game._state._chat['server'])

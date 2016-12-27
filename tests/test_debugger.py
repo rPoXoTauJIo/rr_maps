@@ -7,7 +7,7 @@ import rr_mocks
 
 import rr_debugger
 
-class TestDebugger(unittest.TestCase):
+class TestDebuggerInit(unittest.TestCase):
 
     def setUp(self):
         self.interface = rr_mocks.MockInterface()
@@ -46,13 +46,13 @@ class TestDebuggerFilelog(unittest.TestCase):
         self.interface.init_config('rr_config')
         self.interface.C['FILELOG'] = True
         debugger = rr_debugger.Debugger(self.interface)
-        self.assert_(debugger._debug_file('test message') is True)
+        self.assert_(debugger._debug_file('debugger test file') is True)
     
     def test_filelogger_should_not_send_message_if_disabled(self): 
         self.interface.init_config('rr_config')
         self.interface.C['FILELOG'] = False
         debugger = rr_debugger.Debugger(self.interface)
-        self.assert_(debugger._debug_file('test message') is False)
+        self.assert_(debugger._debug_file('debugger test file') is False)
 
 
 class TestDebuggerSockets(unittest.TestCase):
@@ -80,7 +80,7 @@ class TestDebuggerSockets(unittest.TestCase):
         self.interface.init_config('rr_config')
         self.interface.C['SOCKET'] = True
         debugger = rr_debugger.Debugger(self.interface)
-        message = 'test udp'
+        message = 'debugger  test udp'
 
         # Start fake server in background thread
         server = rr_mocks.MockNetwork(self.interface).server
@@ -98,6 +98,22 @@ class TestDebuggerSockets(unittest.TestCase):
                 break
 
         self.assert_(message in server.messages)
+
+class TestDebuggerEcho(unittest.TestCase):
+    
+    def setUp(self):
+        self.interface = rr_mocks.MockInterface()
+        self.interface.init_config('rr_config')
+
+    def tearDown(self):
+        del self.interface
+
+    def test_debugger_send_echo(self):
+        message = 'debugger test echo'
+        debugger = rr_debugger.Debugger(self.interface)
+        debugger._debug_echo(message)
+        self.assert_(message in self.interface._get_echo_messages())
+
 
 if __name__ == '__main__':
     unittest.main()

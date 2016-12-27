@@ -84,6 +84,9 @@ class Debugger():
         if self.interface.C['FILELOG']:
             return self.interface.send_logger_logLine(self.__logger_name, msg)
         return False
+    
+    def _debug_echo(self, msg):
+        self.interface.debug_echo(msg)
 
     '''
     def debug_message(msg, senders=None):

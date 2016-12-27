@@ -159,3 +159,13 @@ class MockInterface(object):
         
     def get_mod_directory(self):
         return self.__host.sgl_getModDirectory()
+
+    # methods for testing
+    def _get_echo_messages(self):
+        return self.__host._game._state._echo
+
+
+
+
+
+

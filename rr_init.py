@@ -12,3 +12,4 @@ def init():
     interface.init_config('rr_config')
     interface.C['SOCKET'] = True
     interface.C['FILELOG'] = True
+    debugger = rr_debugger.Debugger(interface)
