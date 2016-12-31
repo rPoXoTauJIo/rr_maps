@@ -36,25 +36,6 @@ class MockNetwork(object):
             self.C['SERVERHOST'], self.C['SERVERPORT'])
 
 
-# actually it's just a wrapper around host in bf2
-class bf2(object):
-
-    class GameLogic:
-
-        def __init__(self):
-            # print "GameLogic created"
-            pass
-
-    class GameStatus(object):
-
-        def __init__(self):
-            pass
-
-    def __init__(self, host):
-        self.Status = None
-        self.gameLogic = self.GameLogic()
-
-
 class host(object):
 
     class _MockGame(object):
@@ -98,13 +79,24 @@ class host(object):
     def timer_getWallTime(self):
         return 0
 
-    def sgl_getModDirectory(self):
-        return '.'
-
     def rcon_invoke(self, command):
         self._game.invoke(command)
 
-# class to mock 'game' modules
+    def sgl_getModDirectory(self):
+        return '.'
+    
+    def sgl_getMapName(self):
+        return self.ss_getParam('mapName')
+
+    def ss_getParam(self, key):
+        params = {
+            'mapName' : self._game._state._map[0],
+            'gameMode' : self._game._state._map[1]
+            }
+        return params[key]
+
+
+# class to mock 'game' module
 class game(object):
     
     def __init__(self, host):
@@ -158,3 +150,33 @@ class MockLogger(object):
         # Disabled logger still logs to memory buffer!
         def setActive(self, active):
             self.active = active
+
+class bf2(object):
+    
+    def __init__(self, host):
+        self.gameLogic = self.GameLogic(host)
+        self.serverSettings = self.ServerSettings(host)
+        
+    
+    class GameLogic:
+        
+        def __init__( self, host ):
+            self.host = host
+
+        def getMapName( self ): return self.host.sgl_getMapName( )
+
+    class ServerSettings:
+
+        def __init__( self, host ):
+            self.host = host
+
+        def getGameMode( self ): return self.host.ss_getParam( 'gameMode' )
+    
+
+
+
+
+
+
+
+

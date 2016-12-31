@@ -6,11 +6,9 @@ import threading
 
 import rr_mocks
 g_host = rr_mocks.host()
-g_bf2 = rr_mocks.bf2(g_host)
 g_game = rr_mocks.game(g_host)
 g_realiylogger = rr_mocks.realitylogger(g_host)
 sys.modules['host'] = g_host
-sys.modules['bf2'] = g_bf2
 sys.modules['game'] = g_game
 sys.modules['game'].realitylogger = g_realiylogger
 
@@ -24,17 +22,17 @@ import rr_debugger
 class TestDebugger(unittest.TestCase):
 
     def setUp(self):
-        global g_host, g_host, g_realiylogger
+        global g_host, g_realiylogger
+
         reload(rr_mocks)
+
         g_host = rr_mocks.host()
-        g_bf2 = rr_mocks.bf2(g_host)
         g_game = rr_mocks.game(g_host)
         g_realiylogger = rr_mocks.realitylogger(g_game)
         sys.modules['host'] = g_host
-        sys.modules['bf2'] = g_bf2
         sys.modules['game'] = g_game
         sys.modules['game'].realitylogger = g_realiylogger
-        sys.modules['rr_config'] = g_config
+
         reload(rr_debugger)
 
     def test_init_debugger(self):
@@ -45,21 +43,21 @@ class TestDebugger(unittest.TestCase):
         g_config.C['FILELOG'] = False
         debugger = rr_debugger.Debugger()
 
-        self.assert_(rr_debugger.C['FILELOG'] is False)
+        self.assertTrue(rr_debugger.C['FILELOG'] is False)
 
     def test_filelogger_default_enabled(self):
         g_config.C['FILELOG'] = True
         debugger = rr_debugger.Debugger()
 
-        self.assert_(rr_debugger.C['FILELOG'] is True)
+        self.assertTrue(rr_debugger.C['FILELOG'] is True)
 
     def test_filelogger_can_write_message_if_enabled(self):
         g_config.C['FILELOG'] = True
         test_message = 'debugger(filelogger(enabled))._debug_file'
         debugger = rr_debugger.Debugger()
 
-        self.assert_(debugger._debug_file(test_message) is True)
-        self.assert_(test_message in g_realiylogger.RealityLogger[
+        self.assertTrue(debugger._debug_file(test_message) is True)
+        self.assertTrue(test_message in g_realiylogger.RealityLogger[
                      debugger._logger_name].messages)
 
     def test_filelogger_cannot_write_message_if_disabled(self):
@@ -67,7 +65,7 @@ class TestDebugger(unittest.TestCase):
         test_message = 'debugger(filelogger(disabled))._debug_file'
         debugger = rr_debugger.Debugger()
 
-        self.assert_(debugger._debug_file(test_message) is False)
+        self.assertTrue(debugger._debug_file(test_message) is False)
         with self.assertRaises(KeyError):
             g_realiylogger.RealityLogger[debugger._logger_name]
 
@@ -76,14 +74,14 @@ class TestDebugger(unittest.TestCase):
         g_config.C['SOCKET'] = False
         debugger = rr_debugger.Debugger()
 
-        self.assert_(rr_debugger.C['SOCKET'] is False)
-        self.assert_(debugger._client is None)
+        self.assertTrue(rr_debugger.C['SOCKET'] is False)
+        self.assertTrue(debugger._client is None)
 
     def test_socket_client_default_enabled(self):
         g_config.C['SOCKET'] = True
         debugger = rr_debugger.Debugger()
 
-        self.assert_(rr_debugger.C['SOCKET'] is True)
+        self.assertTrue(rr_debugger.C['SOCKET'] is True)
         self.assertIsInstance(debugger._client, socket.socket)
 
     def test_socket_client_can_send_message(self):
@@ -109,21 +107,21 @@ class TestDebugger(unittest.TestCase):
                 # skipping test if we could not create listening server
                 self.skipTest('Failed to create UDP server, socket in use')
 
-        self.assert_(test_message in server.messages)
+        self.assertTrue(test_message in server.messages)
 
     def test_debugger_send_echo(self):
         test_message = 'debugger._debug_echo'
         debugger = rr_debugger.Debugger()
 
         debugger._debug_echo(test_message)
-        self.assert_(test_message in g_host._game._state._echo)
+        self.assertTrue(test_message in g_host._game._state._echo)
 
     def test_debugger_send_ingame(self):
         test_message = 'debugger._debug_ingame'
         debugger = rr_debugger.Debugger()
 
         debugger._debug_ingame(test_message)
-        self.assert_(test_message in g_host._game._state._chat["server"])
+        self.assertTrue(test_message in g_host._game._state._chat["server"])
 
 
 if __name__ == '__main__':
