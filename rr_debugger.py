@@ -13,6 +13,11 @@ import time
 import cPickle
 import socket
 
+import host
+import realitylogger
+
+import rr_config as config
+
 # import bf2 #suprisingly not needed
 # import host # <-- replaced by interface
 
@@ -21,26 +26,28 @@ import socket
 # import rr_config_debugger as C
 # from datetime import datetime
 
+C = config.C
 
-class Debugger():
+class Debugger(object):
 
     #_client = None
 
-    def __init__(self, interface):
-        self.interface = interface
+    def __init__(self):
         self._client = None
-        self._filelogger = None
 
-        self.__default_addr = self.interface.C['CLIENTHOST']
-        self.__default_port = self.interface.C['CLIENTPORT']
-        self.__default_log_path = self.interface.C['PATH_LOG_DIRECTORY']
-        self.__default_log_filename = self.interface.C['PATH_LOG_FILENAME']
-        self.__logger_name = "RRDebug"
+        #self._time_init_epoch = time.time()
+        #self._time_init_wall = host.timer_getWallTime()
 
-        if self.interface.C['SOCKET']:
-            self.__init_client()
-        if self.interface.C['FILELOG']:
-            self.__init_filelogger()
+        self._default_addr = C['CLIENTHOST']
+        self._default_port = C['CLIENTPORT']
+        self._default_log_path = C['PATH_LOG_DIRECTORY']
+        self._default_log_filename = C['PATH_LOG_FILENAME']
+        self._logger_name = "RRDebug"
+
+        if C['SOCKET']:
+            self._init_client()
+        if C['FILELOG']:
+            self._init_filelogger()
 
         '''
         self.g_time_init_epoch = time.time()
@@ -55,19 +62,19 @@ class Debugger():
                                     fileName=self.__default_log_filename,
                                     continous=True)
         '''
-    
-    def __init_client(self):
+
+    def _init_client(self):
         self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    
-    def __init_filelogger(self):
-        self.interface.create_logger(name=self.__logger_name,
-                                    path=self.__default_log_path,
-                                    fileName=self.__default_log_filename,
-                                    continous=True)
+
+    def _init_filelogger(self):
+        realitylogger.createLogger(name=self._logger_name,
+                                   path=self._default_log_path,
+                                   fileName=self._default_log_filename,
+                                   continous=True)
 
     def _debug_socket(self, msg, addr=None, port=None):
-        if self.interface.C['SOCKET'] and self._client != None:  # safety check
-            if self.interface.C['PICKLE_DATA']: # should test that aswell
+        if C['SOCKET'] and self._client != None:  # safety check
+            if C['PICKLE_DATA']:  # should test that aswell
                 msg = cPickle.dumps(msg)
 
             if addr == None:
@@ -81,13 +88,21 @@ class Debugger():
                     'debug_socket(): failed to send message')
 
     def _debug_file(self, msg):
-        if self.interface.C['FILELOG']:
-            return self.interface.send_logger_logLine(self.__logger_name, msg)
+        if C['FILELOG']:
+            return realitylogger.RealityLogger[self._logger_name].logLine(msg)
         return False
-    
-    def _debug_echo(self, msg):
-        self.interface.debug_echo(msg)
 
+    def _debug_echo(self, msg):
+        try:
+            host.rcon_invoke('echo "%s"' % (str(msg)))
+        except:
+            host.rcon_invoke('echo "_debug_echo(): failed to display message"')
+
+    def _debug_ingame(self, msg):
+        try:
+            host.rcon_invoke('game.sayAll "%s"' % (str(msg)))
+        except:
+            host.rcon_invoke('game.sayAll "_debug_ingame(): failed to display message"')
     '''
     def debug_message(msg, senders=None):
 
