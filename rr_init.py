@@ -4,4 +4,4 @@ import rr_debugger
 
 def init():
     debugger = rr_debugger.Debugger()
-    debugger._debug_echo('testes')
+    pass

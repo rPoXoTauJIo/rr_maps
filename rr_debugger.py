@@ -7,26 +7,21 @@
 #
 # ------------------------------------------------------------------------
 
+# sys modules
 import os
 import sys
 import time
 import cPickle
 import socket
 
+# game core modules
 import host
-import realitylogger
 
-import rr_config as config
+# PR modules
+from game import realitylogger
 
-# import bf2 #suprisingly not needed
-# import host # <-- replaced by interface
-
-# import realitylogger as rlogger # <-- replaced by interface
-
-# import rr_config_debugger as C
-# from datetime import datetime
-
-C = config.C
+# custom modules
+from rr_config import C
 
 class Debugger(object):
 
@@ -37,7 +32,7 @@ class Debugger(object):
 
         #self._time_init_epoch = time.time()
         #self._time_init_wall = host.timer_getWallTime()
-
+        
         self._default_addr = C['CLIENTHOST']
         self._default_port = C['CLIENTPORT']
         self._default_log_path = C['PATH_LOG_DIRECTORY']
@@ -48,21 +43,8 @@ class Debugger(object):
             self._init_client()
         if C['FILELOG']:
             self._init_filelogger()
-
-        '''
-        self.g_time_init_epoch = time.time()
-        self.g_time_init_wall = self.interface.get_wall_time()
         
-        self.g_default_log_path = C.PATH_LOG_DIRECTORY
-        self.g_default_log_filename = C.PATH_LOG_FILENAME
-        
-        self.g_logger_name = "RRDebug"
-        self.interface.create_logger(name=self.g_logger_name,
-                                    path=self.__default_log_path,
-                                    fileName=self.__default_log_filename,
-                                    continous=True)
-        '''
-
+    
     def _init_client(self):
         self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -73,19 +55,18 @@ class Debugger(object):
                                    continous=True)
 
     def _debug_socket(self, msg, addr=None, port=None):
-        if C['SOCKET'] and self._client != None:  # safety check
+        if self._client != None:  # safety check
             if C['PICKLE_DATA']:  # should test that aswell
                 msg = cPickle.dumps(msg)
 
             if addr == None:
-                addr = self.__default_addr
+                addr = self._default_addr
             if port == None:
-                port = self.__default_port
+                port = self._default_port
             try:
                 self._client.sendto(msg, (addr, port))
             except:
-                self.interface.debug_echo(
-                    'debug_socket(): failed to send message')
+                self._debug_echo('_debug_socket(): failed to send message')
 
     def _debug_file(self, msg):
         if C['FILELOG']:
@@ -102,7 +83,8 @@ class Debugger(object):
         try:
             host.rcon_invoke('game.sayAll "%s"' % (str(msg)))
         except:
-            host.rcon_invoke('game.sayAll "_debug_ingame(): failed to display message"')
+            host.rcon_invoke('game.sayAll "_debug_ingame(): failed to send message"')
+
     '''
     def debug_message(msg, senders=None):
 

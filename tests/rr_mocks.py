@@ -104,6 +104,11 @@ class host(object):
     def rcon_invoke(self, command):
         self._game.invoke(command)
 
+# class to mock 'game' modules
+class game(object):
+    
+    def __init__(self, host):
+        self.realitylogger = realitylogger(host)
 
 class realitylogger(object):
 

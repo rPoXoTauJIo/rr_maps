@@ -7,10 +7,12 @@ import threading
 import rr_mocks
 g_host = rr_mocks.host()
 g_bf2 = rr_mocks.bf2(g_host)
+g_game = rr_mocks.game(g_host)
 g_realiylogger = rr_mocks.realitylogger(g_host)
 sys.modules['host'] = g_host
 sys.modules['bf2'] = g_bf2
-sys.modules['realitylogger'] = g_realiylogger
+sys.modules['game'] = g_game
+sys.modules['game'].realitylogger = g_realiylogger
 
 import rr_config
 g_config = rr_config
@@ -19,17 +21,19 @@ sys.modules['rr_config'] = g_config
 import rr_debugger
 
 
-class TestDebuggerInit(unittest.TestCase):
+class TestDebugger(unittest.TestCase):
 
     def setUp(self):
         global g_host, g_host, g_realiylogger
         reload(rr_mocks)
         g_host = rr_mocks.host()
         g_bf2 = rr_mocks.bf2(g_host)
-        g_realiylogger = rr_mocks.realitylogger(g_host)
+        g_game = rr_mocks.game(g_host)
+        g_realiylogger = rr_mocks.realitylogger(g_game)
         sys.modules['host'] = g_host
         sys.modules['bf2'] = g_bf2
-        sys.modules['realitylogger'] = g_realiylogger
+        sys.modules['game'] = g_game
+        sys.modules['game'].realitylogger = g_realiylogger
         sys.modules['rr_config'] = g_config
         reload(rr_debugger)
 
@@ -101,7 +105,7 @@ class TestDebuggerInit(unittest.TestCase):
                 # Ensure server thread ends
                 server_thread.join()
                 break
-            if not server_thread.isAlive(): # no idea but this works
+            if not server_thread.isAlive():
                 # skipping test if we could not create listening server
                 self.skipTest('Failed to create UDP server, socket in use')
 
