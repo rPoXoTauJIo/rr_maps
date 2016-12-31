@@ -16,15 +16,19 @@ class MockNetwork(object):
         def runner_fake_server(self):
             # Run a server to listen for a connection and then close it
             server_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            server_sock.bind((self.__listenhost, self.__listenport))
-            while 1:
-                d = server_sock.recvfrom(1024)
-                data = d[0]  # data
-                addr = d[1]  # ip and port
-                self.messages.append(data)
-                if data in self.exit_flags:
-                    break
-            server_sock.close()
+            try:
+                server_sock.bind((self.__listenhost, self.__listenport))
+                while 1:
+                    d = server_sock.recvfrom(1024)
+                    data = d[0]  # data
+                    addr = d[1]  # ip and port
+                    self.messages.append(data)
+                    if data in self.exit_flags:
+                        break
+                server_sock.close()
+            except socket.error:
+                server_sock.close()
+            
 
     def __init__(self, config):
         self.C = config.C

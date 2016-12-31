@@ -101,6 +101,9 @@ class TestDebuggerInit(unittest.TestCase):
                 # Ensure server thread ends
                 server_thread.join()
                 break
+            if not server_thread.isAlive(): # no idea but this works
+                # skipping test if we could not create listening server
+                self.skipTest('Failed to create UDP server, socket in use')
 
         self.assert_(test_message in server.messages)
 
