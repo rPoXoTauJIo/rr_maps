@@ -29,7 +29,7 @@ class MapsController:
         return 64
 
     def get_path_maplist(self):
-        return os.path.join(self.get_path_base(), C['PATH_MAPLIST'])
+        return os.sep.join([self.get_path_base(), C['PATH_MAPLIST']])
 
     def get_path_base(self):
         return bf2.gameLogic.getModDir()

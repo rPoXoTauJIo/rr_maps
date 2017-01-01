@@ -191,19 +191,22 @@ class TestController(unittest.TestCase):
             ('9:', '"map_4"', 'gamemode_2', 'size_3'),
             ('')  # bf2 maplist always ending with whitestring
         ]
-        with tempfile.NamedTemporaryFile(delete=False) as temp:
+        mock_path_base = tempfile.mkdtemp()
+        g_host._game._dir = mock_path_base
+        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
             maps = '\n'.join(
                 ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
             temp.write(maps)
             mock_path_maplist = temp.name
-            g_config.C['PATH_MAPLIST'] = mock_path_maplist
+            mock_path_maplist_name = os.path.split(temp.name)[1]
+            g_config.C['PATH_MAPLIST'] = mock_path_maplist_name
 
         controller = rr_controller.MapsController()
         maplist = controller.get_current_maplist_file()
         self.assertEqual(maplist, maps, 'temp maplist in %s' %
                          (mock_path_maplist))
         # this won't execute if assertEqual will raise
-        os.remove(mock_path_maplist)
+        shutil.rmtree(mock_path_base)
 
 if __name__ == '__main__':
     unittest.main()

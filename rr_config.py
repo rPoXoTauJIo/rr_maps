@@ -52,7 +52,7 @@ C['PATH_LOG_DIRECTORY'] = "admin/logs"
 #
 # Path relative to PR mod folder
 # Default is "/settings/maplist.con"
-C['PATH_MAPLIST'] = "/settings/maplist.con"
+C['PATH_MAPLIST'] = "settings/maplist.con"
 #
 #
 #
