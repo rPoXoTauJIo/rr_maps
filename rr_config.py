@@ -37,7 +37,7 @@ C['PICKLE_DATA'] = False
 #
 # Use file logger
 # Default is False
-C['FILELOG'] = False
+C['FILELOG'] = True
 #
 #
 # Filename of the admin log file
@@ -48,6 +48,15 @@ C['PATH_LOG_FILENAME'] = "rr_mapscript.txt"
 # Path relative to PR root (not mod root) of mapscript log file
 # Default is "admin/logs"
 C['PATH_LOG_DIRECTORY'] = "admin/logs"
+#
+#
+# Path relative to PR mod folder
+# Default is "/settings/maplist.con"
+C['PATH_MAPLIST'] = "/settings/maplist.con"
+#
+#
+#
+#
 #
 #
 #

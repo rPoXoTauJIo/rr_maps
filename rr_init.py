@@ -1,7 +1,20 @@
+import host
 import rr_debugger
+import rr_controller
 #import rr_maps
 
 
 def init():
     debugger = rr_debugger.Debugger()
-    pass
+    controller = rr_controller.MapsController()
+    #maplist = controller.get_current_maplist_engine()
+    #for entry in maplist:
+    #    debugger._debug_echo(entry)
+    #maplist = controller.get_current_maplist_engine()
+    maplist = host.rcon_invoke( "maplist.list" ).split('\n')
+    debugger._debug_file('len maplist(%s)' % (len(maplist)))
+    #debugger._debug_file(maplist)
+    for entry in maplist:
+        debugger._debug_file('"' + entry + '"')
+    debugger._debug_file('finished maplist')
+
