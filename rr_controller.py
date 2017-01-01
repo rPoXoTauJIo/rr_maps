@@ -2,7 +2,7 @@ import bf2
 import host
 
 # custom modules
-from rr_debugger import Debugger as D
+#from rr_debugger import Debugger as D
 from rr_config import C
 
 class MapsController:
@@ -28,9 +28,13 @@ class MapsController:
     def get_path_maplist(self):
         return C['PATH_MAPLIST']
     
-    def get_current_maplist_file(self):
-        with open(self.get_path_maplist()) as maplist_fo:
-            return maplist_fo.read()
+    def get_path_base(self):
+        return bf2.gameLogic.getModDir()
+    
+    def get_current_maplist_file(self): # context managers not working with i\o in bf2
+        maplist_fo = open(self.get_path_maplist())
+        maplist = maplist_fo.read()
+        return maplist
     
     def get_current_maplist_engine(self):
         return host.rcon_invoke( "maplist.list" )

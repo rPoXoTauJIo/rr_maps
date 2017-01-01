@@ -10,11 +10,8 @@ def init():
     #maplist = controller.get_current_maplist_engine()
     #for entry in maplist:
     #    debugger._debug_echo(entry)
-    #maplist = controller.get_current_maplist_engine()
-    maplist = host.rcon_invoke( "maplist.list" ).split('\n')
-    debugger._debug_file('len maplist(%s)' % (len(maplist)))
-    #debugger._debug_file(maplist)
-    for entry in maplist:
-        debugger._debug_file('"' + entry + '"')
-    debugger._debug_file('finished maplist')
+    maplist = controller.get_path_maplist()
+    #debugger._debug_file('len maplist(%s)' % (len(maplist)))
+    debugger._debug_file(maplist)
+    #debugger._debug_file('finished maplist')
 

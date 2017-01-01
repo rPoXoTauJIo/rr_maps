@@ -155,6 +155,18 @@ class TestController(unittest.TestCase):
         path_maplist = controller.get_path_maplist()
         self.assertEqual(path_maplist, mock_path_maplist)
     
+    def test_controller_can_locate_base_path(self):
+        mock_path_base = tempfile.mkdtemp()
+        print mock_path_base
+        # Clean up the directory yourself
+        os.removedirs(mock_path_base)
+        g_host._game._dir = mock_path_base
+    
+        controller = rr_controller.MapsController()
+        path_base = controller.get_path_base()
+        self.assertEqual(path_base, mock_path_base)
+    
+    @unittest.skip("making base path test")
     def test_controller_can_read_maplist_file(self):
         maplist_mock = [
             ('0:', '"map_1"', 'gamemode_1', 'size_1'),

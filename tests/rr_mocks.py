@@ -52,6 +52,7 @@ class host(object):
                 self._maplist = []
 
         def __init__(self):
+            self._dir = '.'
             self._state = self._MockState()
             self.__handlers = {
                 'echo': self.__handler_echo,
@@ -88,7 +89,7 @@ class host(object):
         return self._game.invoke(command)
 
     def sgl_getModDirectory(self):
-        return '.'
+        return self._game._dir
     
     def sgl_getMapName(self):
         return self.ss_getParam('mapName')
@@ -169,6 +170,8 @@ class bf2(object):
             self.host = host
 
         def getMapName( self ): return self.host.sgl_getMapName( )
+        
+        def getModDir( self ): return self.host.sgl_getModDirectory( )
 
     class ServerSettings:
 
