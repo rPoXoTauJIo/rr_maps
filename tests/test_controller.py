@@ -2,6 +2,7 @@ import sys
 import unittest
 import tempfile
 import os
+import shutil
 
 import rr_mocks
 g_host = rr_mocks.host()
@@ -19,11 +20,12 @@ sys.modules['rr_config'] = g_config
 
 import rr_controller
 
+
 class TestController(unittest.TestCase):
 
     def setUp(self):
         global g_host
-        
+
         reload(rr_mocks)
 
         g_host = rr_mocks.host()
@@ -40,30 +42,33 @@ class TestController(unittest.TestCase):
     def test_init_controller(self):
         controller = rr_controller.MapsController()
         self.assertIsInstance(controller, rr_controller.MapsController)
-    
+
     def test_controller_can_get_current_map_name(self):
         map_mock = ('test_airfield', 'gpm_cq', 64)
         g_host._game._state._map = map_mock
 
         controller = rr_controller.MapsController()
-        self.assertTrue(controller.get_current_map_name() is map_mock[0], str(controller.get_current_map()) + ' is not ' + str(map_mock[0]))
-    
+        self.assertTrue(controller.get_current_map_name() is map_mock[0], str(
+            controller.get_current_map()) + ' is not ' + str(map_mock[0]))
+
     def test_controller_can_get_current_map_gamemode(self):
         map_mock = ('test_airfield', 'gpm_cq', 64)
         g_host._game._state._map = map_mock
 
         controller = rr_controller.MapsController()
-        self.assertTrue(controller.get_current_map_gamemode() is map_mock[1], str(controller.get_current_map()) + ' is not ' + str(map_mock[1]))
-    
+        self.assertTrue(controller.get_current_map_gamemode() is map_mock[1], str(
+            controller.get_current_map()) + ' is not ' + str(map_mock[1]))
+
     @unittest.skip("backport layer algorithm from realitycore")
     def test_controller_can_get_current_map_layer(self):
         map_mock = ('test_airfield', 'gpm_cq', 64)
         g_host._game._state._map = map_mock
 
         controller = rr_controller.MapsController()
-        self.assertTrue(controller.get_current_map_layer() is map_mock[2], str(controller.get_current_map()) + ' is not ' + str(map_mock[2]))
+        self.assertTrue(controller.get_current_map_layer() is map_mock[2], str(
+            controller.get_current_map()) + ' is not ' + str(map_mock[2]))
         self.fail("backport layer algorithm from realitycore")
-    
+
     def test_controller_cannot_get_current_non64_layer(self):
         map_mock = ('test_airfield', 'gpm_cq', 32)
         g_host._game._state._map = map_mock
@@ -84,13 +89,15 @@ class TestController(unittest.TestCase):
             ('1:', '"map_2"', 'gamemode_2', 'size_2'),
             ('2:', '"map_3"', 'gamemode_3', 'size_3'),
             ('3:', '"map_4"', 'gamemode_4', 'size_4'),
-            ('') # bf2 maplist always ending with whitestring
-            ]
-        
-        g_host._game._state._maplist = '\n'.join((' '.join(entry) for entry in maplist_mock))
+            ('')  # bf2 maplist always ending with whitestring
+        ]
+
+        g_host._game._state._maplist = '\n'.join(
+            (' '.join(entry) for entry in maplist_mock))
 
         controller = rr_controller.MapsController()
-        self.assertEqual(controller.get_current_maplist_engine(), '\n'.join(' '.join(entry) for entry in maplist_mock))
+        self.assertEqual(controller.get_current_maplist_engine(), '\n'.join(
+            ' '.join(entry) for entry in maplist_mock))
 
     @unittest.skip("future stuff")
     def test_controller_filter_maplist_by_group(self):
@@ -105,68 +112,71 @@ class TestController(unittest.TestCase):
             ('7:', '"map_4"', 'gamemode_1', 'size_3'),
             ('8:', '"map_4"', 'gamemode_2', 'size_1'),
             ('9:', '"map_4"', 'gamemode_2', 'size_3'),
-            ('') # bf2 maplist always ending with whitestring
-            ]
+            ('')  # bf2 maplist always ending with whitestring
+        ]
         groups_mock = {
-            'group_1' : [ # represebtin aas big
+            'group_1': [  # represebtin aas big
                 'map_1|gamemode_1|size_2',
                 'map_1|gamemode_1|size_3',
                 'map_3|gamemode_1|size_3',
                 'map_4|gamemode_1|size_3',
-                ],
-            'group_2' : [ # ins big
+            ],
+            'group_2': [  # ins big
                 'map_2|gamemode_2|size_2',
                 'map_2|gamemode_2|size_3',
                 'map_4|gamemode_2|size_3',
-                ],
-            'group_3' : [ # small
+            ],
+            'group_3': [  # small
                 'map_1|gamemode_1|size_1',
                 'map_2|gamemode_2|size_2',
                 'map_3|gamemode_1|size_1',
-                ],
-            'group_4' : [ # seed
+            ],
+            'group_4': [  # seed
                 'map_1|gamemode_1|size_1',
                 'map_3|gamemode_1|size_1',
-                ],
+            ],
+        }
+        num_players_mock = {  # probability of group depending on player num
+            # should be in external .ini file
+            20: {
+                'group_4': 1.0,
+                'group_3': 0.3
+            },
+            54: {
+                'group_1': 0.8,
+                'group_3': 1.0
+            },
+            80: {
+                'group_1': 1.0,
+                'group_2': 0.4
             }
-        num_players_mock = { # probability of group depending on player num
-                            # should be in external .ini file
-            20 : {
-                'group_4' : 1.0,
-                'group_3' : 0.3
-                },
-            54 : {
-                'group_1' : 0.8,
-                'group_3' : 1.0
-                },
-            80 : {
-                'group_1' : 1.0,
-                'group_2' : 0.4
-                }
-            }
+        }
 
         controller = rr_controller.MapsController()
-        
+
     def test_controller_can_locate_maplist_file(self):
-        mock_path_maplist = '/mock_settings/mock_maplist.con'
-        g_config.C['PATH_MAPLIST'] = mock_path_maplist
-    
+        mock_path_base = tempfile.mkdtemp()
+        g_host._game._dir = mock_path_base
+        mock_path_maplist = tempfile.NamedTemporaryFile(
+            dir=mock_path_base,
+            delete=False
+        )
+        mock_path_maplist.close()
+        g_config.C['PATH_MAPLIST'] = os.path.split(mock_path_maplist.name)[1]
+
         controller = rr_controller.MapsController()
         path_maplist = controller.get_path_maplist()
-        self.assertEqual(path_maplist, mock_path_maplist)
-    
+        self.assertTrue(os.path.exists(path_maplist))
+        shutil.rmtree(mock_path_base)
+
     def test_controller_can_locate_base_path(self):
         mock_path_base = tempfile.mkdtemp()
-        print mock_path_base
-        # Clean up the directory yourself
-        os.removedirs(mock_path_base)
         g_host._game._dir = mock_path_base
-    
+
         controller = rr_controller.MapsController()
-        path_base = controller.get_path_base()
-        self.assertEqual(path_base, mock_path_base)
-    
-    @unittest.skip("making base path test")
+        self.assertEqual(controller.get_path_base(), mock_path_base)
+        shutil.rmtree(mock_path_base)
+
     def test_controller_can_read_maplist_file(self):
         maplist_mock = [
             ('0:', '"map_1"', 'gamemode_1', 'size_1'),
@@ -179,18 +189,21 @@ class TestController(unittest.TestCase):
             ('7:', '"map_4"', 'gamemode_1', 'size_3'),
             ('8:', '"map_4"', 'gamemode_2', 'size_1'),
             ('9:', '"map_4"', 'gamemode_2', 'size_3'),
-            ('') # bf2 maplist always ending with whitestring
-            ]
+            ('')  # bf2 maplist always ending with whitestring
+        ]
         with tempfile.NamedTemporaryFile(delete=False) as temp:
-            maps = '\n'.join(('mapList.append '+' '.join(entry[1:]) for entry in maplist_mock[:-1]))+'\n'
-            temp.write(maps) # 
+            maps = '\n'.join(
+                ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
+            temp.write(maps)
             mock_path_maplist = temp.name
             g_config.C['PATH_MAPLIST'] = mock_path_maplist
 
         controller = rr_controller.MapsController()
         maplist = controller.get_current_maplist_file()
-        self.assertEqual(maplist, maps, 'temp maplist in %s' % (mock_path_maplist))
-        os.remove(mock_path_maplist) # this won't execute if assertEqual will raise
+        self.assertEqual(maplist, maps, 'temp maplist in %s' %
+                         (mock_path_maplist))
+        # this won't execute if assertEqual will raise
+        os.remove(mock_path_maplist)
 
 if __name__ == '__main__':
     unittest.main()

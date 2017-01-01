@@ -22,6 +22,7 @@ from game import realitylogger
 # custom modules
 from rr_config import C
 
+
 class Debugger(object):
 
     #_client = None
@@ -31,7 +32,7 @@ class Debugger(object):
 
         #self._time_init_epoch = time.time()
         #self._time_init_wall = host.timer_getWallTime()
-        
+
         self._default_addr = C['CLIENTHOST']
         self._default_port = C['CLIENTPORT']
         self._default_log_path = C['PATH_LOG_DIRECTORY']
@@ -42,8 +43,7 @@ class Debugger(object):
             self._init_client()
         if C['FILELOG']:
             self._init_filelogger()
-        
-    
+
     def _init_client(self):
         self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -82,7 +82,8 @@ class Debugger(object):
         try:
             host.rcon_invoke('game.sayAll "%s"' % (str(msg)))
         except:
-            host.rcon_invoke('game.sayAll "_debug_ingame(): failed to send message"')
+            host.rcon_invoke(
+                'game.sayAll "_debug_ingame(): failed to send message"')
 
     '''
     def debug_message(msg, senders=None):

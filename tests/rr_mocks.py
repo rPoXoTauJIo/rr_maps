@@ -28,7 +28,6 @@ class MockNetwork(object):
                 server_sock.close()
             except socket.error:
                 server_sock.close()
-            
 
     def __init__(self, config):
         self.C = config.C
@@ -57,7 +56,7 @@ class host(object):
             self.__handlers = {
                 'echo': self.__handler_echo,
                 'game.sayAll': self.__handler_say_all,
-                'maplist.list' : self.__handler_maplist_list,
+                'maplist.list': self.__handler_maplist_list,
             }
 
         def invoke(self, input):
@@ -75,7 +74,7 @@ class host(object):
             message = input.replace('game.sayAll ', '')
             message = message.replace('"', '').replace("'", '')
             self._state._chat['server'].append(message)
-        
+
         def __handler_maplist_list(self, input):
             return self._state._maplist
 
@@ -90,23 +89,24 @@ class host(object):
 
     def sgl_getModDirectory(self):
         return self._game._dir
-    
+
     def sgl_getMapName(self):
         return self.ss_getParam('mapName')
 
     def ss_getParam(self, key):
         params = {
-            'mapName' : self._game._state._map[0],
-            'gameMode' : self._game._state._map[1]
-            }
+            'mapName': self._game._state._map[0],
+            'gameMode': self._game._state._map[1]
+        }
         return params[key]
 
 
 # class to mock 'game' module
 class game(object):
-    
+
     def __init__(self, host):
         self.realitylogger = realitylogger(host)
+
 
 class realitylogger(object):
 
@@ -157,34 +157,25 @@ class MockLogger(object):
         def setActive(self, active):
             self.active = active
 
+
 class bf2(object):
-    
+
     def __init__(self, host):
         self.gameLogic = self.GameLogic(host)
         self.serverSettings = self.ServerSettings(host)
-        
-    
+
     class GameLogic:
-        
-        def __init__( self, host ):
+
+        def __init__(self, host):
             self.host = host
 
-        def getMapName( self ): return self.host.sgl_getMapName( )
-        
-        def getModDir( self ): return self.host.sgl_getModDirectory( )
+        def getMapName(self): return self.host.sgl_getMapName()
+
+        def getModDir(self): return self.host.sgl_getModDirectory()
 
     class ServerSettings:
 
-        def __init__( self, host ):
+        def __init__(self, host):
             self.host = host
 
-        def getGameMode( self ): return self.host.ss_getParam( 'gameMode' )
-    
-
-
-
-
-
-
-
-
+        def getGameMode(self): return self.host.ss_getParam('gameMode')

@@ -58,7 +58,7 @@ class TestDebugger(unittest.TestCase):
 
         self.assertTrue(debugger._debug_file(test_message) is True)
         self.assertTrue(test_message in g_realiylogger.RealityLogger[
-                     debugger._logger_name].messages)
+            debugger._logger_name].messages)
 
     def test_filelogger_cannot_write_message_if_disabled(self):
         g_config.C['FILELOG'] = False
