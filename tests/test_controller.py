@@ -97,7 +97,7 @@ class TestController(unittest.TestCase):
 
         controller = rr_controller.MapsController()
         self.assertEqual(controller.get_current_maplist_engine(), '\n'.join(
-            ' '.join(entry) for entry in maplist_mock))
+            ' '.join(entry) for entry in maplist_mock).strip().split('\n'))
 
     @unittest.skip("future stuff")
     def test_controller_filter_maplist_by_group(self):
@@ -207,6 +207,28 @@ class TestController(unittest.TestCase):
                          (mock_path_maplist))
         # this won't execute if assertEqual will raise
         shutil.rmtree(mock_path_base)
+    
+    def test_controller_can_get_random_start_map(self):
+        maplist_mock = [
+            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
+            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
+            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
+            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
+            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
+            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
+            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
+            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
+            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
+            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
+            ('')  # bf2 maplist always ending with whitestring
+        ]
+        g_host._game._state._maplist = '\n'.join(
+            (' '.join(entry) for entry in maplist_mock))
+        
+        controller = rr_controller.MapsController()
+        self.assertIn(controller.get_random_start_map(), g_host._game._state._maplist, 'temp maplist in %s' %
+                         (g_host._game._state._maplist))
+        
 
 if __name__ == '__main__':
     unittest.main()

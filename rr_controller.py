@@ -1,4 +1,5 @@
 import os
+import random
 
 import bf2
 import host
@@ -41,4 +42,7 @@ class MapsController:
         return maplist
 
     def get_current_maplist_engine(self):
-        return host.rcon_invoke("maplist.list")
+        return host.rcon_invoke("maplist.list").strip().split('\n')
+
+    def get_random_start_map(self):
+        return random.choice(self.get_current_maplist_engine())
