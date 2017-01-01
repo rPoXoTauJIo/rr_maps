@@ -39,6 +39,7 @@ class MapsController:
     def get_current_maplist_file(self):
         maplist_fo = open(self.get_path_maplist())
         maplist = maplist_fo.read()
+        maplist_fo.close()
         return maplist
 
     def get_current_maplist_engine(self):
@@ -46,3 +47,14 @@ class MapsController:
 
     def get_random_start_map(self):
         return random.choice(self.get_current_maplist_engine())
+    
+    def add_map_start_to_maplist_fo(self, map):
+        maplist_fo = open(self.get_path_maplist())
+        maplist = maplist_fo.read()
+        maplist_fo.close()
+        # rewriting file
+        maplist_fo = open(self.get_path_maplist(), 'w')
+        maplist_fo.write('mapList.append "%s" %s %s\n' % (map))
+        maplist_fo.write(maplist)
+        maplist_fo.close()
+        

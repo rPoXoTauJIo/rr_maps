@@ -231,7 +231,45 @@ class TestController(unittest.TestCase):
         choose1 = controller.get_random_start_map()
         choose2 = controller.get_random_start_map()
         self.assertNotEqual(choose1, choose2)
+    
+    def test_controller_can_add_map_to_start_of_maplist_fo(self):
+        maplist_mock = [
+            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
+            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
+            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
+            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
+            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
+            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
+            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
+            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
+            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
+            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
+            ('')  # bf2 maplist always ending with whitestring
+            ]
+        mock_path_base = tempfile.mkdtemp()
+        g_host._game._dir = mock_path_base
+        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
+            maps = '\n'.join(
+                ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
+            temp.write(maps)
+            mock_path_maplist = temp.name
+            mock_path_maplist_name = os.path.split(temp.name)[1]
+            g_config.C['PATH_MAPLIST'] = mock_path_maplist_name
+
+        controller = rr_controller.MapsController()
+        mock_original_maplist = controller.get_current_maplist_file()
+        mock_random_start_map = ('map_1', 'gamemode_1', 'size_1')
+        controller.add_map_start_to_maplist_fo(mock_random_start_map)
         
+        new_maplist = controller.get_current_maplist_file()
+        
+        with open(mock_path_maplist) as temp_maplist_fo:
+            mock_map_string = 'mapList.append "%s" %s %s' % (mock_random_start_map)
+            temp_first_map = temp_maplist_fo.readlines()[0].strip() # fix for \n
+            self.assertEqual(mock_map_string, temp_first_map, 'maplist in %s' % mock_path_maplist)
+
+        # this won't execute if assertEqual will raise
+        shutil.rmtree(mock_path_base)
 
 if __name__ == '__main__':
     unittest.main()
