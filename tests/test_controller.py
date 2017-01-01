@@ -228,6 +228,9 @@ class TestController(unittest.TestCase):
         controller = rr_controller.MapsController()
         self.assertIn(controller.get_random_start_map(), g_host._game._state._maplist, 'temp maplist in %s' %
                          (g_host._game._state._maplist))
+        choose1 = controller.get_random_start_map()
+        choose2 = controller.get_random_start_map()
+        self.assertNotEqual(choose1, choose2)
         
 
 if __name__ == '__main__':
