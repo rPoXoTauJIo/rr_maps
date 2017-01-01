@@ -1,5 +1,7 @@
 import sys
 import unittest
+import tempfile
+import os
 
 import rr_mocks
 g_host = rr_mocks.host()
@@ -152,7 +154,31 @@ class TestController(unittest.TestCase):
         controller = rr_controller.MapsController()
         path_maplist = controller.get_path_maplist()
         self.assertEqual(path_maplist, mock_path_maplist)
+    
+    def test_controller_can_read_maplist_file(self):
+        maplist_mock = [
+            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
+            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
+            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
+            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
+            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
+            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
+            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
+            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
+            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
+            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
+            ('') # bf2 maplist always ending with whitestring
+            ]
+        with tempfile.NamedTemporaryFile(delete=False) as temp:
+            maps = '\n'.join(('mapList.append '+' '.join(entry[1:]) for entry in maplist_mock[:-1]))+'\n'
+            temp.write(maps) # 
+            mock_path_maplist = temp.name
+            g_config.C['PATH_MAPLIST'] = mock_path_maplist
 
+        controller = rr_controller.MapsController()
+        maplist = controller.get_current_maplist_file()
+        self.assertEqual(maplist, maps, 'temp maplist in %s' % (mock_path_maplist))
+        os.remove(mock_path_maplist) # this won't execute if assertEqual will raise
 
 if __name__ == '__main__':
     unittest.main()

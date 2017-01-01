@@ -25,8 +25,12 @@ class MapsController:
     def get_current_map_layer(self):
         return 64
     
-    def get_current_maplist_engine(self):
-        return host.rcon_invoke( "maplist.list" )
-    
     def get_path_maplist(self):
         return C['PATH_MAPLIST']
+    
+    def get_current_maplist_file(self):
+        with open(self.get_path_maplist()) as maplist_fo:
+            return maplist_fo.read()
+    
+    def get_current_maplist_engine(self):
+        return host.rcon_invoke( "maplist.list" )
