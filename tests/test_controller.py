@@ -208,6 +208,50 @@ class TestController(unittest.TestCase):
         # this won't execute if assertEqual will raise
         shutil.rmtree(mock_path_base)
     
+    def test_controller_can_read_and_filter_maplist_file(self):
+        maplist_mock = [
+            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
+            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
+            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
+            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
+            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
+            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
+            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
+            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
+            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
+            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
+            ('')  # bf2 maplist always ending with whitestring
+        ]
+        mock_path_base = tempfile.mkdtemp()
+        g_host._game._dir = mock_path_base
+        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
+            remmed_strings = [
+                'rem this is example of 1st single remmed string',
+                'rem this is example of 2nd single remmed string',
+                'beginrem',
+                '========================================',
+                'this is example of multiline remmed text',
+                'this is example of multiline remmed text',
+                '========================================',
+                'endrem'
+                ]
+            for line in remmed_strings:
+                temp.write(line+'\n')
+            maps = '\n'.join(
+                ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
+            temp.write(maps)
+            mock_path_maplist = temp.name
+            mock_path_maplist_name = os.path.split(temp.name)[1]
+            g_config.C['PATH_MAPLIST'] = mock_path_maplist_name
+
+        controller = rr_controller.MapsController()
+        filtered_maplist = controller.get_current_maplist_file_filtered()
+        filtered_mock_maplist = maps.split('\n')[:-1]
+        self.assertEqual(filtered_maplist, filtered_mock_maplist, 'maplist:\n%s\nmaps:\n%s\ntemp maplist in %s' %
+                         (filtered_maplist, filtered_mock_maplist, mock_path_maplist))
+        # this won't execute if assertEqual will raise
+        shutil.rmtree(mock_path_base)
+    
     def test_controller_can_get_random_start_map(self):
         maplist_mock = [
             ('0:', '"map_1"', 'gamemode_1', 'size_1'),
@@ -230,6 +274,8 @@ class TestController(unittest.TestCase):
                          (g_host._game._state._maplist))
         choose1 = controller.get_random_start_map()
         choose2 = controller.get_random_start_map()
+        while choose2 == choose1:
+            choose2 = controller.get_random_start_map()
         self.assertNotEqual(choose1, choose2)
     
     def test_controller_can_add_map_to_start_of_maplist_fo(self):
