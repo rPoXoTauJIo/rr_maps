@@ -21,23 +21,27 @@ sys.modules['rr_config'] = g_config
 import rr_controller
 
 
-class TestController(unittest.TestCase):
+def _reload_modules():
+    global g_host
+
+    reload(rr_mocks)
+
+    g_host = rr_mocks.host()
+    g_bf2 = rr_mocks.bf2(g_host)
+    g_game = rr_mocks.game(g_host)
+    g_realiylogger = rr_mocks.realitylogger(g_game)
+    sys.modules['host'] = g_host
+    sys.modules['bf2'] = g_bf2
+    sys.modules['game'] = g_game
+    sys.modules['game'].realitylogger = g_realiylogger
+
+    reload(rr_controller)
+
+
+class TestControllerBasic(unittest.TestCase):
 
     def setUp(self):
-        global g_host
-
-        reload(rr_mocks)
-
-        g_host = rr_mocks.host()
-        g_bf2 = rr_mocks.bf2(g_host)
-        g_game = rr_mocks.game(g_host)
-        g_realiylogger = rr_mocks.realitylogger(g_game)
-        sys.modules['host'] = g_host
-        sys.modules['bf2'] = g_bf2
-        sys.modules['game'] = g_game
-        sys.modules['game'].realitylogger = g_realiylogger
-
-        reload(rr_controller)
+        _reload_modules()
 
     def test_init_controller(self):
         controller = rr_controller.MapsController()
@@ -154,104 +158,6 @@ class TestController(unittest.TestCase):
 
         controller = rr_controller.MapsController()
 
-    def test_controller_can_locate_maplist_file(self):
-        mock_path_base = tempfile.mkdtemp()
-        g_host._game._dir = mock_path_base
-        mock_path_maplist = tempfile.NamedTemporaryFile(
-            dir=mock_path_base,
-            delete=False
-        )
-        mock_path_maplist.close()
-        g_config.C['PATH_MAPLIST'] = os.path.split(mock_path_maplist.name)[1]
-
-        controller = rr_controller.MapsController()
-        path_maplist = controller.get_path_maplist()
-        self.assertTrue(os.path.exists(path_maplist))
-        shutil.rmtree(mock_path_base)
-
-    def test_controller_can_locate_base_path(self):
-        mock_path_base = tempfile.mkdtemp()
-        g_host._game._dir = mock_path_base
-
-        controller = rr_controller.MapsController()
-        self.assertEqual(controller.get_path_base(), mock_path_base)
-        shutil.rmtree(mock_path_base)
-
-    def test_controller_can_read_maplist_file(self):
-        maplist_mock = [
-            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
-            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
-            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
-            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
-            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
-            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
-            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
-            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
-            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
-            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
-            ('')  # bf2 maplist always ending with whitestring
-        ]
-        mock_path_base = tempfile.mkdtemp()
-        g_host._game._dir = mock_path_base
-        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
-            maps = '\n'.join(
-                ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
-            temp.write(maps)
-            mock_path_maplist = temp.name
-            mock_path_maplist_name = os.path.split(temp.name)[1]
-            g_config.C['PATH_MAPLIST'] = mock_path_maplist_name
-
-        controller = rr_controller.MapsController()
-        maplist = controller.get_current_maplist_file()
-        self.assertEqual(maplist, maps, 'temp maplist in %s' %
-                         (mock_path_maplist))
-        # this won't execute if assertEqual will raise
-        shutil.rmtree(mock_path_base)
-    
-    def test_controller_can_read_and_filter_maplist_file(self):
-        maplist_mock = [
-            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
-            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
-            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
-            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
-            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
-            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
-            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
-            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
-            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
-            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
-            ('')  # bf2 maplist always ending with whitestring
-        ]
-        mock_path_base = tempfile.mkdtemp()
-        g_host._game._dir = mock_path_base
-        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
-            remmed_strings = [
-                'rem this is example of 1st single remmed string',
-                'rem this is example of 2nd single remmed string',
-                'beginrem',
-                '========================================',
-                'this is example of multiline remmed text',
-                'this is example of multiline remmed text',
-                '========================================',
-                'endrem'
-                ]
-            for line in remmed_strings:
-                temp.write(line+'\n')
-            maps = '\n'.join(
-                ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
-            temp.write(maps)
-            mock_path_maplist = temp.name
-            mock_path_maplist_name = os.path.split(temp.name)[1]
-            g_config.C['PATH_MAPLIST'] = mock_path_maplist_name
-
-        controller = rr_controller.MapsController()
-        filtered_maplist = controller.get_current_maplist_file_filtered()
-        filtered_mock_maplist = maps.split('\n')[:-1]
-        self.assertEqual(filtered_maplist, filtered_mock_maplist, 'maplist:\n%s\nmaps:\n%s\ntemp maplist in %s' %
-                         (filtered_maplist, filtered_mock_maplist, mock_path_maplist))
-        # this won't execute if assertEqual will raise
-        shutil.rmtree(mock_path_base)
-    
     def test_controller_can_get_random_start_map(self):
         maplist_mock = [
             ('0:', '"map_1"', 'gamemode_1', 'size_1'),
@@ -277,45 +183,286 @@ class TestController(unittest.TestCase):
         while choose2 == choose1:
             choose2 = controller.get_random_start_map()
         self.assertNotEqual(choose1, choose2)
+
+class TestControllerFileOperationsBasic(unittest.TestCase):
+
+    def setUp(self):
+        _reload_modules()
+        
+        # prepare files
+        self._mock_fo_data = None
+        self._mock_path_base = None
+        self._mock_path_maplist = None
+        self._mock_filename_maplist = None
+        
+        self._mock_path_base, self._mock_path_maplist, self._mock_filename_maplist = self._prepare_temp_maplist_file_clear()
+        self._mock_fo_data = self._read_file_data(self._mock_path_maplist)
     
-    def test_controller_can_add_map_to_start_of_maplist_fo(self):
+    def tearDown(self):
+        self._clear_temp_maplist_folder(self._mock_path_base)
+    
+    def _prepare_temp_maplist_file_clear(self):
         maplist_mock = [
-            ('0:', '"map_1"', 'gamemode_1', 'size_1'),
-            ('1:', '"map_1"', 'gamemode_1', 'size_2'),
-            ('2:', '"map_1"', 'gamemode_1', 'size_3'),
-            ('3:', '"map_2"', 'gamemode_2', 'size_2'),
-            ('4:', '"map_2"', 'gamemode_2', 'size_3'),
-            ('5:', '"map_3"', 'gamemode_1', 'size_1'),
-            ('6:', '"map_3"', 'gamemode_1', 'size_3'),
-            ('7:', '"map_4"', 'gamemode_1', 'size_3'),
-            ('8:', '"map_4"', 'gamemode_2', 'size_1'),
-            ('9:', '"map_4"', 'gamemode_2', 'size_3'),
-            ('')  # bf2 maplist always ending with whitestring
-            ]
+            ('mapList.append "map_1" gamemode_1 size_1'),
+            ('mapList.append "map_1" gamemode_1 size_2'),
+            ('mapList.append "map_1" gamemode_1 size_3'),
+            ('mapList.append "map_2" gamemode_2 size_2'),
+            ('mapList.append "map_2" gamemode_2 size_3'),
+            ('mapList.append "map_3" gamemode_1 size_1'),
+            ('mapList.append "map_3" gamemode_1 size_3'),
+            ('mapList.append "map_4" gamemode_1 size_3'),
+            ('mapList.append "map_4" gamemode_2 size_1'),
+            ('mapList.append "map_4" gamemode_2 size_3'),
+        ]
         mock_path_base = tempfile.mkdtemp()
-        g_host._game._dir = mock_path_base
         with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
-            maps = '\n'.join(
-                ('mapList.append ' + ' '.join(entry[1:]) for entry in maplist_mock[:-1])) + '\n'
+            #maps = '\n'.join(' '.join(str('mapList.append ' + entry) for entry in maplist_mock[:-1])) + '\n'
+            maps = '\n'.join(maplist_mock)
             temp.write(maps)
             mock_path_maplist = temp.name
-            mock_path_maplist_name = os.path.split(temp.name)[1]
-            g_config.C['PATH_MAPLIST'] = mock_path_maplist_name
+            mock_path_maplist_filename = os.path.split(temp.name)[1]
+
+        return mock_path_base, mock_path_maplist, mock_path_maplist_filename
+    
+    def _read_file_data(self, path_file):
+        with open(path_file) as fo:
+             return fo.read()
+    
+    def _clear_temp_maplist_file(self, path_file):
+        os.remove(path_file)
+    
+    def _clear_temp_maplist_folder(self, path_dir):
+        shutil.rmtree(path_dir)
+    
+    def test_controller_can_locate_base_path(self):
+        g_host._game._dir = self._mock_path_base
 
         controller = rr_controller.MapsController()
-        mock_original_maplist = controller.get_current_maplist_file()
+        self.assertEqual(controller.get_path_base(), self._mock_path_base)
+
+    def test_controller_can_locate_maplist_file(self):
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        path_maplist = controller.get_path_maplist()
+        self.assertTrue(os.path.exists(path_maplist))
+
+    def test_controller_can_read_clear_maplist_file(self):
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        maplist = controller.get_current_maplist_file()
+        self.assertEqual(maplist, self._mock_fo_data, 'maplist:\n%s\nmocked data:\n%s' %
+                         (maplist, self._mock_fo_data))
+                         
+    def test_controller_can_add_map_to_start_of_maplist_fo(self):
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        mock_original_maplist = controller.get_current_maplist_file() # note it's unfiltered
         mock_random_start_map = ('map_1', 'gamemode_1', 'size_1')
         controller.add_map_start_to_maplist_fo(mock_random_start_map)
         
         new_maplist = controller.get_current_maplist_file()
         
-        with open(mock_path_maplist) as temp_maplist_fo:
+        with open(self._mock_path_maplist) as temp_maplist_fo:
             mock_map_string = 'mapList.append "%s" %s %s' % (mock_random_start_map)
             temp_first_map = temp_maplist_fo.readlines()[0].strip() # fix for \n
-            self.assertEqual(mock_map_string, temp_first_map, 'maplist in %s' % mock_path_maplist)
+            self.assertEqual(mock_map_string, temp_first_map)
 
-        # this won't execute if assertEqual will raise
-        shutil.rmtree(mock_path_base)
+class TestControllerFileOperationsAdvanced(unittest.TestCase):
+
+    def setUp(self):
+        _reload_modules()
+        
+        # prepare files
+        self._mock_maplist = [
+            'mapList.append "map_1" gamemode_1 size_1',
+            'mapList.append "map_1" gamemode_1 size_2',
+            'mapList.append "map_1" gamemode_1 size_3',
+            'mapList.append "map_2" gamemode_2 size_2',
+            'mapList.append "map_2" gamemode_2 size_3',
+            'mapList.append "map_3" gamemode_1 size_1',
+            'mapList.append "map_3" gamemode_1 size_3',
+            'mapList.append "map_4" gamemode_1 size_3',
+            'mapList.append "map_4" gamemode_2 size_1',
+            'mapList.append "map_4" gamemode_2 size_3',
+            ]
+        self._mock_fo_data = None
+        self._mock_path_base = None
+        self._mock_path_maplist = None
+        self._mock_filename_maplist = None
+        
+        #self._mock_path_base, self._mock_path_maplist, self._mock_filename_maplist = self._prepare_temp_maplist_file_clear()
+        #self._mock_fo_data = self._read_file_data(self._mock_path_maplist)
+        
+        
+    
+    def tearDown(self):
+        if self._mock_path_base:
+            self._clear_temp_maplist_folder(self._mock_path_base)
+            
+    def _make_temp_files(self, type):
+        if type == 'singlelines':
+            self._mock_path_base, self._mock_path_maplist, self._mock_filename_maplist = self._prepare_temp_maplist_file_with_rem_singlelines()
+        elif type == 'multilines':
+            self._mock_path_base, self._mock_path_maplist, self._mock_filename_maplist = self._prepare_temp_maplist_file_with_rem_multilines()
+        elif type == 'mixed':
+            self._mock_path_base, self._mock_path_maplist, self._mock_filename_maplist = self._prepare_temp_maplist_file_with_rem_mixed()
+        elif type == 'real':
+            # preparing real file:
+            self._mock_path_base, self._mock_path_maplist, self._mock_filename_maplist = self._prepare_temp_maplist_file_real_1440()
+
+        self._mock_fo_data = self._read_file_data(self._mock_path_maplist)
+
+    def _prepare_temp_maplist_file_with_rem_singlelines(self):
+        comments_strings = [
+            'rem this is example of 1st single remmed string',
+            'rem this is example of 2nd single remmed string',
+        ]
+        mock_path_base = tempfile.mkdtemp()
+        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
+            comments = '\n'.join(comments_strings)
+            temp.write(comments+'\n')
+            map_appends = '\n'.join(self._mock_maplist)
+            temp.write(map_appends)
+            mock_path_maplist = temp.name
+            mock_path_maplist_filename = os.path.split(temp.name)[1]
+
+        return mock_path_base, mock_path_maplist, mock_path_maplist_filename
+    
+    def _prepare_temp_maplist_file_with_rem_multilines(self):
+        comments_strings = [
+            'beginrem',
+            '========================================',
+            'this is example of multiline remmed text',
+            'this is example of multiline remmed text',
+            '========================================',
+            'endrem',
+        ]
+        mock_path_base = tempfile.mkdtemp()
+        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
+            comments = '\n'.join(comments_strings)
+            temp.write(comments+'\n')
+            map_appends = '\n'.join(self._mock_maplist)
+            temp.write(map_appends)
+            mock_path_maplist = temp.name
+            mock_path_maplist_filename = os.path.split(temp.name)[1]
+
+        return mock_path_base, mock_path_maplist, mock_path_maplist_filename
+    
+    def _prepare_temp_maplist_file_with_rem_mixed(self):
+        comments_strings = [
+            'rem this is example of 1st single remmed string',
+            'rem this is example of 2nd single remmed string',
+            'beginrem',
+            '========================================',
+            'this is example of multiline remmed text',
+            'this is example of multiline remmed text',
+            '========================================',
+            'endrem',
+        ]
+        mock_path_base = tempfile.mkdtemp()
+        with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
+            comments = '\n'.join(comments_strings)
+            temp.write(comments+'\n')
+            map_appends = '\n'.join(self._mock_maplist)
+            temp.write(map_appends)
+            mock_path_maplist = temp.name
+            mock_path_maplist_filename = os.path.split(temp.name)[1]
+
+        return mock_path_base, mock_path_maplist, mock_path_maplist_filename
+
+    def _prepare_temp_maplist_file_real_1440(self):
+        with open('maplist.con') as maplist_1440:
+            mock_path_base = tempfile.mkdtemp()
+            with tempfile.NamedTemporaryFile(dir=mock_path_base, delete=False) as temp:
+                temp.write(maplist_1440.read())
+                mock_path_maplist = temp.name
+                mock_path_maplist_filename = os.path.split(temp.name)[1]
+
+        return mock_path_base, mock_path_maplist, mock_path_maplist_filename
+    
+    def _read_file_data(self, path_file):
+        with open(path_file) as fo:
+             return fo.read()
+    
+    def _clear_temp_maplist_file(self, path_file):
+        os.remove(path_file)
+    
+    def _clear_temp_maplist_folder(self, path_dir):
+        shutil.rmtree(path_dir)
+    
+    def test_controller_can_read_and_filter_maplist_file_with_singleline_rems(self):
+        self._make_temp_files('singlelines')
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        filtered_maplist = controller.get_current_maplist_file_filtered()
+        
+        self.assertEqual(filtered_maplist, self._mock_maplist, 'maplist:\n%s\nmaps:\n%s' %
+                         (filtered_maplist, self._mock_maplist))
+
+    def test_controller_can_read_and_filter_maplist_file_with_multiline_rems(self):
+        self._make_temp_files('multilines')
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        filtered_maplist = controller.get_current_maplist_file_filtered()
+
+        self.assertEqual(filtered_maplist, self._mock_maplist, 'maplist:\n%s\nmaps:\n%s' %
+                         (filtered_maplist, self._mock_maplist))
+
+    def test_controller_can_read_and_filter_maplist_file_with_mixed_rems(self):
+        self._make_temp_files('mixed')
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        filtered_maplist = controller.get_current_maplist_file_filtered()
+
+        self.assertEqual(filtered_maplist, self._mock_maplist, 'maplist:\n%s\nmaps:\n%s' %
+                         (filtered_maplist, self._mock_maplist))
+
+    def test_controller_can_read_and_filter_maplist_file_with_real_1440_maplist(self):
+        self._make_temp_files('real')
+        g_host._game._dir = self._mock_path_base
+        g_config.C['PATH_MAPLIST'] = self._mock_filename_maplist
+
+        controller = rr_controller.MapsController()
+        filtered_maplist = controller.get_current_maplist_file_filtered()
+        
+        gamemodes = [
+            'gpm_cq',
+            'gpm_insurgency',
+            'gpm_skirmish',
+            'gpm_cnc',
+            'gpm_vehicles',
+            'gpm_coop'
+            ]
+        layers = [ 16, 32, 64, 128 ]
+        for filtered_entry in filtered_maplist:
+            self.assertTrue(filtered_entry.lower().startswith('maplist.append '))
+            self.assertTrue(len(filtered_entry.split(' ')) == 4)
+            self.assertTrue(filtered_entry.split(' ')[2] in gamemodes, 'not found "%s" in gamemodes' % (filtered_entry.split(' ')[2]))
+            self.assertTrue(int(filtered_entry.split(' ')[3]) in layers, 'not found "%s" in layers' % (filtered_entry.split(' ')[3]))
+
+
+    @unittest.skip("refactoring tests")
+    def test_controller_can_remember_start_maplist_fo(self):
+        pass
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
