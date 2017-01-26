@@ -64,9 +64,11 @@ class Debugger(object):
                 port = self._default_port
             try:
                 self._client.sendto(msg, (addr, port))
+                return True
             except:
                 self._debug_echo('_debug_socket(): failed to send message')
                 return False
+        return False
 
     def _debug_file(self, msg):
         if C['FILELOG']:

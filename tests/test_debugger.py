@@ -105,37 +105,43 @@ class TestDebugger(unittest.TestCase):
                 break
             if not server_thread.isAlive():
                 # skipping test if we could not create listening server
-                self.skipTest('Failed to create UDP server, socket in use')
+                self.skipTest('Failed to create UDP server thread')
 
         self.assertTrue(test_message in server.messages)
     
-    def test_socket_client_do_not_send_message_if_disabled(self):
+    def test_socket_client_should_not_send_message_if_disabled(self):
         g_config.C['SOCKET'] = False
         debugger = rr_debugger.Debugger()
         test_message = 'debugger(socket(disabled))._debug_socket'
+        timeout_message = 'TIMEOUT'
 
         # Start fake server in background thread
+        client = rr_mocks.MockNetwork(g_config).client
         server = rr_mocks.MockNetwork(g_config).server
         server.exit_flags.append(test_message)
+        server.exit_flags.append(timeout_message)
         server_thread = threading.Thread(target=server.runner_fake_server)
         server_thread.start()
-
+        
+        start_time = time.time()
+        timeout = 0.640 # seconds should be enough for everyone
+        
         # Start client sending messages
-        message_received = False
         while 1:
             debugger._debug_socket(
                 test_message, g_config.C['CLIENTHOST'], g_config.C['CLIENTPORT'])
             if test_message in server.messages:
                 # Ensure server thread ends
                 server_thread.join()
-                message_received = True
                 break
             if not server_thread.isAlive():
                 # skipping test if we could not create listening server
-                self.skipTest('Failed to create UDP server, socket in use')
-
-        if message_received:
-            self.fail('Should not send messages if disabled')
+                self.skipTest('Failed to create UDP server thread')
+            if time.time() - start_time > timeout:
+                client.send_message(timeout_message, g_config.C['CLIENTHOST'], g_config.C['CLIENTPORT'])
+                server_thread.join()
+                break
+        
         self.assertFalse(test_message in server.messages)
 
     def test_debugger_send_echo(self):
@@ -187,7 +193,7 @@ class TestDebugger(unittest.TestCase):
                 break
             if not server_thread.isAlive():
                 # skipping test if we could not create listening server
-                self.skipTest('Failed to create UDP server, socket in use')
+                self.skipTest('Failed to create UDP server thread')
 
         self.assertTrue(test_message in server.messages)
     

@@ -28,11 +28,33 @@ class MockNetwork(object):
                 server_sock.close()
             except socket.error:
                 server_sock.close()
+    
+    class __FakeClient(object):
+        
+        def __init__(self, default_serverhost, default_serverport):
+            self.__default_addr = default_serverhost
+            self.__default_port = default_serverport
+            self.__client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        
+        def send_message(self, msg, addr=None, port=None):
+            if addr == None:
+                addr = self.__default_addr
+            if port == None:
+                port = self.__default_port
+            try:
+                self.__client.sendto(msg, (addr, port))
+                return True
+            except:
+                return False
 
     def __init__(self, config):
         self.C = config.C
         self.server = self.__FakeServer(
             self.C['SERVERHOST'], self.C['SERVERPORT'])
+        self.client = self.__FakeClient(
+            self.C['CLIENTHOST'], self.C['CLIENTPORT'])
+    
+    
 
 
 class host(object):
