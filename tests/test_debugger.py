@@ -151,8 +151,7 @@ class TestDebugger(unittest.TestCase):
 
         # Start client sending messages
         while 1:
-            debugger._debug_socket(
-                test_message, g_config.C['CLIENTHOST'], g_config.C['CLIENTPORT'])
+            debugger.debugMessage(test_message, 'udp')
             if test_message in server.messages:
                 # Ensure server thread ends
                 server_thread.join()
@@ -162,6 +161,15 @@ class TestDebugger(unittest.TestCase):
                 self.skipTest('Failed to create UDP server, socket in use')
 
         self.assertTrue(test_message in server.messages)
+    
+    def test_debugger_send_to_multiple_targets_filelogger(self):
+        g_config.C['FILELOG'] = True
+        test_message = 'debugger.debugMessage(file)'
+        debugger = rr_debugger.Debugger()
+
+        debugger.debugMessage(test_message, 'file')
+        self.assertTrue(test_message in g_realiylogger.RealityLogger[
+            debugger._logger_name].messages)
 
 
 if __name__ == '__main__':
