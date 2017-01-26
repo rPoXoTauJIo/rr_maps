@@ -151,7 +151,7 @@ class TestDebugger(unittest.TestCase):
 
         # Start client sending messages
         while 1:
-            debugger.debugMessage(test_message, 'udp')
+            debugger.debugMessage(test_message, ['udp'])
             if test_message in server.messages:
                 # Ensure server thread ends
                 server_thread.join()
@@ -167,9 +167,10 @@ class TestDebugger(unittest.TestCase):
         test_message = 'debugger.debugMessage(file)'
         debugger = rr_debugger.Debugger()
 
-        debugger.debugMessage(test_message, 'file')
+        debugger.debugMessage(test_message, ['file'])
         self.assertTrue(test_message in g_realiylogger.RealityLogger[
             debugger._logger_name].messages)
+        
 
 
 if __name__ == '__main__':
