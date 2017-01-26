@@ -137,6 +137,31 @@ class TestDebugger(unittest.TestCase):
 
         debugger.debugMessage(test_message)
         self.assertTrue(test_message in g_host._game._state._echo)
+    
+    def test_debugger_send_to_multiple_targets_socket(self):
+        g_config.C['SOCKET'] = True
+        debugger = rr_debugger.Debugger()
+        test_message = 'debugger.debugMessage(socket)'
+
+        # Start fake server in background thread
+        server = rr_mocks.MockNetwork(g_config).server
+        server.exit_flags.append(test_message)
+        server_thread = threading.Thread(target=server.runner_fake_server)
+        server_thread.start()
+
+        # Start client sending messages
+        while 1:
+            debugger._debug_socket(
+                test_message, g_config.C['CLIENTHOST'], g_config.C['CLIENTPORT'])
+            if test_message in server.messages:
+                # Ensure server thread ends
+                server_thread.join()
+                break
+            if not server_thread.isAlive():
+                # skipping test if we could not create listening server
+                self.skipTest('Failed to create UDP server, socket in use')
+
+        self.assertTrue(test_message in server.messages)
 
 
 if __name__ == '__main__':
