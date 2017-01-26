@@ -108,6 +108,35 @@ class TestDebugger(unittest.TestCase):
                 self.skipTest('Failed to create UDP server, socket in use')
 
         self.assertTrue(test_message in server.messages)
+    
+    def test_socket_client_do_not_send_message_if_disabled(self):
+        g_config.C['SOCKET'] = False
+        debugger = rr_debugger.Debugger()
+        test_message = 'debugger(socket(disabled))._debug_socket'
+
+        # Start fake server in background thread
+        server = rr_mocks.MockNetwork(g_config).server
+        server.exit_flags.append(test_message)
+        server_thread = threading.Thread(target=server.runner_fake_server)
+        server_thread.start()
+
+        # Start client sending messages
+        message_received = False
+        while 1:
+            debugger._debug_socket(
+                test_message, g_config.C['CLIENTHOST'], g_config.C['CLIENTPORT'])
+            if test_message in server.messages:
+                # Ensure server thread ends
+                server_thread.join()
+                message_received = True
+                break
+            if not server_thread.isAlive():
+                # skipping test if we could not create listening server
+                self.skipTest('Failed to create UDP server, socket in use')
+
+        if message_received:
+            self.fail('Should not send messages if disabled')
+        self.assertFalse(test_message in server.messages)
 
     def test_debugger_send_echo(self):
         test_message = 'debugger._debug_echo'
