@@ -90,7 +90,7 @@ class Debugger(object):
                 'game.sayAll "_debug_ingame(): failed to send message"')
             return False
 
-    def debugMessage(self, msg, targets):
+    def debugMessage(self, msg, targets=['echo']):
         senders = {
             'ingame' : self._debug_ingame,
             'echo' : self._debug_echo,
