@@ -66,6 +66,7 @@ class Debugger(object):
                 self._client.sendto(msg, (addr, port))
             except:
                 self._debug_echo('_debug_socket(): failed to send message')
+                return False
 
     def _debug_file(self, msg):
         if C['FILELOG']:
@@ -75,15 +76,33 @@ class Debugger(object):
     def _debug_echo(self, msg):
         try:
             host.rcon_invoke('echo "%s"' % (str(msg)))
+            return True
         except:
             host.rcon_invoke('echo "_debug_echo(): failed to display message"')
+            return False
 
     def _debug_ingame(self, msg):
         try:
             host.rcon_invoke('game.sayAll "%s"' % (str(msg)))
+            return True
         except:
             host.rcon_invoke(
                 'game.sayAll "_debug_ingame(): failed to send message"')
+            return False
+
+    def debugMessage(self, msg, targets):
+        senders = {
+            'ingame' : self._debug_ingame,
+            'echo' : self._debug_echo,
+            'file' : self._debug_file,
+            'udp' : self._debug_socket
+            }
+        
+        for target in targets:
+            if target not in senders:
+                continue
+            senders[target](msg)
+    
 
     '''
     def debug_message(msg, senders=None):

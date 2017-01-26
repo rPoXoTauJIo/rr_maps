@@ -122,6 +122,14 @@ class TestDebugger(unittest.TestCase):
 
         debugger._debug_ingame(test_message)
         self.assertTrue(test_message in g_host._game._state._chat["server"])
+    
+    def test_debugger_send_to_multiple_targets_ingame_echo(self):
+        test_message = 'debugger.debugMessage(ingame, echo)'
+        debugger = rr_debugger.Debugger()
+
+        debugger.debugMessage(test_message, ['ingame', 'echo'])
+        self.assertTrue(test_message in g_host._game._state._echo)
+        self.assertTrue(test_message in g_host._game._state._chat["server"])
 
 
 if __name__ == '__main__':
