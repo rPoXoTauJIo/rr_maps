@@ -43,7 +43,7 @@ class TestControllerBasic(unittest.TestCase):
     def setUp(self):
         _reload_modules()
 
-    def test_init_controller(self):
+    def test_controller_init(self):
         controller = rr_controller.MapsController()
         self.assertIsInstance(controller, rr_controller.MapsController)
 

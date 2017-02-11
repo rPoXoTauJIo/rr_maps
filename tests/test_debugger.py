@@ -205,7 +205,6 @@ class TestDebugger(unittest.TestCase):
         debugger.debugMessage(test_message, ['file'])
         self.assertTrue(test_message in g_realiylogger.RealityLogger[
             debugger._logger_name].messages)
-        
 
 
 if __name__ == '__main__':
