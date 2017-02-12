@@ -7,7 +7,7 @@ C = {}
 #
 # UDP socket debug enable/disable
 # Default is False
-C['SOCKET'] = False
+C['SOCKET'] = True
 #
 #
 # Server receiver address
