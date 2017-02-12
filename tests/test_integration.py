@@ -37,7 +37,7 @@ class TestServer(unittest.TestCase):
         server_thread.start()
 
         start_time = time.time()
-        timeout = 5.640 # seconds should be enough for everyone
+        timeout = 10.640 # seconds should be enough for everyone
 
         # starting game server
         self.game_server = subprocess.Popen(launch_string, shell=False)
