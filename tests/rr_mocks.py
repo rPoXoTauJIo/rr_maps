@@ -53,8 +53,6 @@ class MockNetwork(object):
             self.C['SERVERHOST'], self.C['SERVERPORT'])
         self.client = self.__FakeClient(
             self.C['CLIENTHOST'], self.C['CLIENTPORT'])
-    
-    
 
 
 class host(object):

@@ -24,8 +24,6 @@ import rr_controller
 def _reload_modules():
     global g_host
 
-    reload(rr_mocks)
-
     g_host = rr_mocks.host()
     g_bf2 = rr_mocks.bf2(g_host)
     g_game = rr_mocks.game(g_host)

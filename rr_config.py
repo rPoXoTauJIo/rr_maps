@@ -30,11 +30,6 @@ C['CLIENTHOST'] = 'localhost'
 C['CLIENTPORT'] = 8888
 #
 #
-# Use python cPickle lib for packing data in socket
-# Default is False
-C['PICKLE_DATA'] = False
-#
-#
 # Use file logger
 # Default is False
 C['FILELOG'] = True

@@ -1,9 +1,10 @@
 import host
+import rr_config
 import rr_debugger
 import rr_controller
 
 def init():
-    debugger = rr_debugger.Debugger()
+    debugger = rr_debugger.Debugger(rr_config)
     # for integration testing
     debugger.debugMessage('INIT: Server initialized', ['echo', 'udp'])
     controller = rr_controller.MapsController()

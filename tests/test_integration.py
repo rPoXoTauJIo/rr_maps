@@ -20,6 +20,7 @@ class TestServer(unittest.TestCase):
         if rr_config.C['SOCKET']:
             self.skipTest('Sockets disabled, cant receive debug info from game server')
 
+    @unittest.skip('need to refactor tests first')
     def test_can_start_server(self):
         test_message = 'INIT: Server initialized'
         timeout_message = 'TIMEOUT'

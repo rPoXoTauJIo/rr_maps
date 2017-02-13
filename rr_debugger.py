@@ -19,15 +19,11 @@ import host
 # PR modules
 from game import realitylogger
 
-# custom modules
-from rr_config import C
-
-
 class Debugger(object):
 
     #_client = None
 
-    def __init__(self):
+    def __init__(self, C):
         self._client = None
 
         #self._time_init_epoch = time.time()
@@ -38,11 +34,13 @@ class Debugger(object):
         self._default_log_path = C['PATH_LOG_DIRECTORY']
         self._default_log_filename = C['PATH_LOG_FILENAME']
         self._logger_name = "RRDebug"
+        self._logger_enabled = False
 
         if C['SOCKET']:
             self._init_client()
         if C['FILELOG']:
             self._init_filelogger()
+            self._logger_enabled = True
 
     def _init_client(self):
         self._client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -55,9 +53,6 @@ class Debugger(object):
 
     def _debug_socket(self, msg, addr=None, port=None):
         if self._client != None:  # safety check
-            if C['PICKLE_DATA']:  # should test that aswell
-                msg = cPickle.dumps(msg)
-
             if addr == None:
                 addr = self._default_addr
             if port == None:
@@ -71,8 +66,12 @@ class Debugger(object):
         return False
 
     def _debug_file(self, msg):
-        if C['FILELOG']:
-            return realitylogger.RealityLogger[self._logger_name].logLine(msg)
+        if self._logger_enabled:
+            try:
+                return realitylogger.RealityLogger[self._logger_name].logLine(msg)
+            except KeyError:
+                self._logger_enabled = False
+                return False
         return False
 
     def _debug_echo(self, msg):
