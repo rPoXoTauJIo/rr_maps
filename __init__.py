@@ -1,2 +1,2 @@
 import dam
-DAMW()
+dam.DAMW()
