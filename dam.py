@@ -98,7 +98,8 @@ def Debug(s):
 	if debug: 
 		print '.'.join([str(x) for x in time.localtime()[:6]]), 'DAM:', s
 	elif mm != None:
-		mm.debug(4, s)	
+		#mm.debug(4, s)
+        print '.'.join([str(x) for x in time.localtime()[:6]]), 'DAM:', s
 		
 def GetSetBasePath():
 	return bf2.gameLogic.getModDir()+"/settings/"
@@ -720,7 +721,7 @@ class DAMW:
 		return
 		
 	def init(self):
-		global mm, state
+		global state
 		
 		if state == NEEDINIT:
 			init()
@@ -728,16 +729,10 @@ class DAMW:
 			state = RUN
 			onGameStatusChanged(bf2.GameStatus.Playing)
 		
-		mm.info("Started DAM")
+		#mm.info("Started DAM")
 	
 	def shutdown(self):
 		global state
 		
 		if state == RUN:
 			state = STOPPED
-
-def mm_load( modManager ):
-	global mm
-		
-	mm = modManager
-	return DAMW()

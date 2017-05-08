@@ -1,1 +1,0 @@
-.rrenv/Scripts/python.exe -u -m unittest discover tests -v
