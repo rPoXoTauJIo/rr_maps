@@ -58,6 +58,7 @@ import string
 import os
 import time
 import game.realitytimer as rtimer
+import game.realityadmin as radmin
 
 # for exception printing
 import sys
@@ -310,12 +311,14 @@ def SetMapList(ml):
         spl = mn.split()
         host.rcon_invoke('maplist.append %s %s %s' % ( spl[MAPNAME], spl[GAMEMODE], spl[MAPSIZE] ))
     host.rcon_invoke('admin.setnextlevel 0')
+    radmin.constructMaplist()
     
 def SetMap(mn):
     host.rcon_invoke('maplist.clear')
     spl = mn.split()
     host.rcon_invoke('maplist.append %s %s %s' % (spl[MAPNAME], spl[GAMEMODE], spl[MAPSIZE]))
     host.rcon_invoke('admin.setnextlevel 0')
+    radmin.constructMaplist()
 
 def init():
     global g_playing, g_timer, state, g_need_choose_map, g_ml_game_start_time
