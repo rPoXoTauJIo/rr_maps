@@ -1,13 +1,13 @@
 import host
-import rr_config
-import rr_debugger
-import rr_controller
+import config
+import debugger
+import controller
 
 def init():
-    debugger = rr_debugger.Debugger(rr_config)
+    debug = debugger.Debugger(config.C)
     # for integration testing
-    debugger.debugMessage('INIT: Server initialized', ['echo', 'udp'])
-    controller = rr_controller.MapsController()
+    debug.message('INIT: Server initialized', ['echo', 'udp'])
+    control = controller.MapsController()
     #maplist = controller.get_current_maplist_engine()
     # for entry in maplist:
     #    debugger._debug_echo(entry)
