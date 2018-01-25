@@ -45,20 +45,6 @@ class MapsController:
     def get_path_base(self):
         return bf2.gameLogic.getModDir()
 
-    # context managers not working with i\o in bf2
-    def get_current_maplist_file(self):
-        maplist_fo = open(self.get_path_maplist())
-        maplist = maplist_fo.read()
-        maplist_fo.close()
-        return maplist
-    
-    def get_current_maplist_file_filtered(self):
-        maplist_fo = open(self.get_path_maplist())
-        maplist = maplist_fo.readlines()
-        maplist_fo.close()
-        maplist_filtered = [entry.strip() for entry in maplist if entry.lower().startswith('maplist.append')]
-        return maplist_filtered
-
     def get_current_maplist_engine(self):
         return host.rcon_invoke("maplist.list").strip().split('\n')
 

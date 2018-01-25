@@ -1,2 +1,2 @@
-import rr_init
-rr_init.init()
+import ms_main
+ms_main.init()
