@@ -15,7 +15,8 @@ class TestLogger(unittest.TestCase):
         #sys.modules['host'] = g_host
         #sys.modules['game'] = g_game
         #sys.modules['game'].realitylogger = g_realiylogger
-        if 'ms_logger' not in sys.modules:
+
+        if 'ms_logger' not in globals():
             import ms_logger
 
             # weird trick needed so module will be discovered
